@@ -1,0 +1,216 @@
+[gd_scene format=3 uid="uid://c6xk7b8wan3m"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_glass"]
+bg_color = Color(0.1, 0.1, 0.12, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.08)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+shadow_color = Color(0, 0, 0, 0.2)
+shadow_size = 15
+shadow_offset = Vector2(0, 8)
+
+[sub_resource type="GDScript" id="GDScript_popup"]
+script/source = "extends CanvasLayer
+
+@onready var panel = $Panel
+@onready var name_edit = $Panel/VBoxContainer/NameEdit
+@onready var hunger_val = $Panel/VBoxContainer/StatsGrid/HungerRow/Value
+@onready var health_val = $Panel/VBoxContainer/StatsGrid/HealthRow/Value
+@onready var happy_val = $Panel/VBoxContainer/StatsGrid/HappyRow/Value
+@onready var mood_val = $Panel/VBoxContainer/StatsGrid/MoodRow/Value
+@onready var behavior_lbl = $Panel/VBoxContainer/BehaviorLabel
+
+var current_pet = null
+var _update_timer = 0.0
+
+func _ready():
+	name_edit.text_submitted.connect(_on_name_submitted)
+
+func _process(delta):
+	if not visible or not is_instance_valid(current_pet): return
+	
+	_update_timer += delta
+	if _update_timer > 0.1:
+		_refresh_live_stats()
+		_update_timer = 0.0
+
+func display(pet):
+	current_pet = pet
+	name_edit.text = pet.pet_custom_name if pet.pet_custom_name != \"\" else pet.pet_type
+	
+	_refresh_live_stats()
+	
+	panel.pivot_offset = panel.size / 2
+	show()
+	var tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(panel, \"scale\", Vector2.ONE, 0.25).from(Vector2.ZERO)
+
+func _refresh_live_stats():
+	if not is_instance_valid(current_pet): return
+	
+	hunger_val.text = \"%d / 100\" % floor(current_pet.hunger)
+	health_val.text = \"%d / 100\" % floor(current_pet.health)
+	happy_val.text = \"%d / 100\" % floor(current_pet.happiness)
+	
+	# Update Mood logic
+	var mood_data = _calculate_mood(current_pet)
+	mood_val.text = mood_data.text
+	mood_val.add_theme_color_override(\"font_color\", mood_data.color)
+	
+	# Alert colors
+	hunger_val.add_theme_color_override(\"font_color\", Color(1, 0.6, 0.2) if current_pet.hunger < 30 else Color.WHITE)
+	health_val.add_theme_color_override(\"font_color\", Color(1, 0.4, 0.4) if current_pet.health < 30 else Color.WHITE)
+	happy_val.add_theme_color_override(\"font_color\", Color(0.4, 0.8, 1.0) if current_pet.happiness < 30 else Color.WHITE)
+	
+	# Trait/State logic
+	var trait_key = \"WILD\"
+	var trait_val = current_pet.wild_behavior
+	if current_pet.current_state != 0:
+		trait_key = \"SHOP\"
+		trait_val = current_pet.shop_behavior
+		
+	var behavior_keys = current_pet.Behavior.keys()
+	var b_name = behavior_keys[trait_val] if trait_val < behavior_keys.size() else \"Unknown\"
+	behavior_lbl.text = \"%s TRAIT: %s\" % [trait_key, b_name.capitalize()]
+	
+	name_edit.editable = (current_pet.current_state != 0) 
+	name_edit.placeholder_text = \"Enter name...\" if name_edit.editable else \"(Rescue to rename!)\"
+
+func _calculate_mood(pet) -> Dictionary:
+	if pet.health < 40: return {\"text\": \"🤒 Sick\", \"color\": Color(1, 0.47, 0.42)}
+	if pet.hunger < 20: return {\"text\": \"😋 Starving\", \"color\": Color(1, 0.5, 0.1)}
+	
+	if pet.happiness > 90 and pet.hunger > 80: return {\"text\": \"😋 Ecstatic\", \"color\": Color(1, 0.84, 0)}
+	if pet.happiness > 70: return {\"text\": \"😊 Happy\", \"color\": Color(0.56, 0.93, 0.56)}
+	if pet.happiness > 40: return {\"text\": \"😐 Content\", \"color\": Color(1, 1, 1)}
+	if pet.happiness > 20: return {\"text\": \"😟 Sad\", \"color\": Color(0.53, 0.81, 0.98)}
+	return {\"text\": \"😭 Depressed\", \"color\": Color(0.39, 0.58, 0.93)}
+
+func _on_name_submitted(new_text):
+	if current_pet and name_edit.editable:
+		current_pet.pet_custom_name = new_text
+		if current_pet.has_node(\"NameLabel\"):
+			current_pet.get_node(\"NameLabel\").text = new_text
+		
+		var tween = create_tween()
+		tween.tween_property(name_edit, \"modulate\", Color(0.5, 2.0, 0.5), 0.1)
+		tween.tween_property(name_edit, \"modulate\", Color.WHITE, 0.2)
+		name_edit.release_focus()
+"
+
+[node name="PetInfoPopup" type="CanvasLayer"]
+layer = 102
+visible = false
+script = SubResource("GDScript_popup")
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -140.0
+offset_right = 180.0
+offset_bottom = 190.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_glass")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 25.0
+offset_right = -25.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 15
+
+[node name="NameEdit" type="LineEdit" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+placeholder_text = "Enter name..."
+alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatsGrid" type="VBoxContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="MoodRow" type="HBoxContainer" parent="Panel/VBoxContainer/StatsGrid"]
+layout_mode = 2
+
+[node name="Icon" type="Label" parent="Panel/VBoxContainer/StatsGrid/MoodRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "✨ Current Mood"
+
+[node name="Value" type="Label" parent="Panel/VBoxContainer/StatsGrid/MoodRow"]
+layout_mode = 2
+text = "😊 Content"
+
+[node name="HSeparator" type="HSeparator" parent="Panel/VBoxContainer/StatsGrid"]
+modulate = Color(1, 1, 1, 0.196078)
+layout_mode = 2
+
+[node name="HungerRow" type="HBoxContainer" parent="Panel/VBoxContainer/StatsGrid"]
+layout_mode = 2
+
+[node name="Icon" type="Label" parent="Panel/VBoxContainer/StatsGrid/HungerRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🍖 Hunger"
+
+[node name="Value" type="Label" parent="Panel/VBoxContainer/StatsGrid/HungerRow"]
+layout_mode = 2
+text = "100 / 100"
+
+[node name="HealthRow" type="HBoxContainer" parent="Panel/VBoxContainer/StatsGrid"]
+layout_mode = 2
+
+[node name="Icon" type="Label" parent="Panel/VBoxContainer/StatsGrid/HealthRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "❤️ Health"
+
+[node name="Value" type="Label" parent="Panel/VBoxContainer/StatsGrid/HealthRow"]
+layout_mode = 2
+text = "100 / 100"
+
+[node name="HappyRow" type="HBoxContainer" parent="Panel/VBoxContainer/StatsGrid"]
+layout_mode = 2
+
+[node name="Icon" type="Label" parent="Panel/VBoxContainer/StatsGrid/HappyRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "😊 Happiness"
+
+[node name="Value" type="Label" parent="Panel/VBoxContainer/StatsGrid/HappyRow"]
+layout_mode = 2
+text = "100 / 100"
+
+[node name="BehaviorLabel" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "SHOP TRAIT: WANDER"
+horizontal_alignment = 1
+
+[node name="Prompt" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 10
+theme_override_font_sizes/font_size = 12
+text = "Press ENTER to Save | SPACE to Close"
+horizontal_alignment = 1

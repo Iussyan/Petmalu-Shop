@@ -1,0 +1,154 @@
+[gd_scene format=3 uid="uid://cxo4nn3xkcf0e"]
+
+[sub_resource type="GDScript" id="GDScript_hud"]
+script/source = "extends CanvasLayer
+
+@onready var coin_lbl = $Stats/CoinBox/HBox/Label
+@onready var rep_lbl = $Stats/RepBox/HBox/Label
+@onready var pets_lbl = $Stats/PetBox/HBox/Label
+@onready var food_lbl = $Stats/FoodBox/HBox/Label
+@onready var treat_lbl = $Stats/TreatBox/HBox/Label
+
+func _ready():
+	_update_stats()
+	# Connect to GameManager signals
+	if GameManager.has_signal(\"stats_changed\"):
+		GameManager.stats_changed.connect(_on_stats_changed)
+	if GameManager.has_signal(\"inventory_changed\"):
+		GameManager.inventory_changed.connect(_on_inventory_changed)
+
+func _on_stats_changed(_stat_name: String, _new_value):
+	_update_stats()
+
+func _on_inventory_changed(_item: String, _amount: int):
+	_update_stats()
+
+func _update_stats():
+	coin_lbl.text = str(GameManager.money)
+	rep_lbl.text = str(GameManager.reputation)
+	pets_lbl.text = str(GameManager.pets_rescued)
+	food_lbl.text = str(GameManager.inventory.get(\"food\", 0))
+	treat_lbl.text = str(GameManager.inventory.get(\"treat\", 0))
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
+bg_color = Color(0, 0, 0, 0.588235)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.156863)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+expand_margin_left = 12.0
+expand_margin_top = 4.0
+expand_margin_right = 12.0
+expand_margin_bottom = 4.0
+
+[node name="MainHUD" type="CanvasLayer" unique_id=228337841]
+layer = 60
+script = SubResource("GDScript_hud")
+
+[node name="Stats" type="HBoxContainer" parent="." unique_id=351012011]
+offset_left = 16.0
+offset_top = 6.0
+offset_right = 548.0
+offset_bottom = 46.0
+theme_override_constants/separation = 25
+
+[node name="CoinBox" type="PanelContainer" parent="Stats" unique_id=310945511]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="HBox" type="HBoxContainer" parent="Stats/CoinBox" unique_id=2123522543]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="Label" parent="Stats/CoinBox/HBox" unique_id=838818075]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "💰"
+
+[node name="Label" type="Label" parent="Stats/CoinBox/HBox" unique_id=728129038]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "100"
+
+[node name="RepBox" type="PanelContainer" parent="Stats" unique_id=618473167]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="HBox" type="HBoxContainer" parent="Stats/RepBox" unique_id=465618616]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="Label" parent="Stats/RepBox/HBox" unique_id=167178620]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "⭐"
+
+[node name="Label" type="Label" parent="Stats/RepBox/HBox" unique_id=1901760443]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.647059, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "0"
+
+[node name="PetBox" type="PanelContainer" parent="Stats" unique_id=506881273]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="HBox" type="HBoxContainer" parent="Stats/PetBox" unique_id=362360912]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="Label" parent="Stats/PetBox/HBox" unique_id=1551639784]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🐾"
+
+[node name="Label" type="Label" parent="Stats/PetBox/HBox" unique_id=1863921412]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 1, 0.498039, 1)
+theme_override_font_sizes/font_size = 18
+text = "0"
+
+[node name="FoodBox" type="PanelContainer" parent="Stats" unique_id=270766372]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="HBox" type="HBoxContainer" parent="Stats/FoodBox" unique_id=5998095]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="Label" parent="Stats/FoodBox/HBox" unique_id=532419733]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🥖"
+
+[node name="Label" type="Label" parent="Stats/FoodBox/HBox" unique_id=1425924334]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.701961, 0.4, 1)
+theme_override_font_sizes/font_size = 18
+text = "10"
+
+[node name="TreatBox" type="PanelContainer" parent="Stats" unique_id=674502208]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="HBox" type="HBoxContainer" parent="Stats/TreatBox" unique_id=1585660312]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="Label" parent="Stats/TreatBox/HBox" unique_id=1332019142]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🍬"
+
+[node name="Label" type="Label" parent="Stats/TreatBox/HBox" unique_id=535425690]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.4, 0.9, 1)
+theme_override_font_sizes/font_size = 18
+text = "0"

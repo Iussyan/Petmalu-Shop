@@ -1,0 +1,277 @@
+[gd_scene format=3 uid="uid://cxo4nn3xkcf0d"]
+
+[sub_resource type="GDScript" id="GDScript_shop_popup"]
+script/source = "extends CanvasLayer
+
+@onready var coin_lbl = $Panel/VBoxContainer/Header/CoinLabel
+@onready var grid = $Panel/VBoxContainer/ScrollContainer/Grid
+
+var _card_style: StyleBoxFlat
+var _btn_buy_style: StyleBoxFlat
+var _btn_control_style: StyleBoxFlat
+
+func _ready():
+	_init_styles()
+	_update_coins()
+	_populate_items()
+
+func _init_styles():
+	# Card Style (Subtle glow)
+	_card_style = StyleBoxFlat.new()
+	_card_style.bg_color = Color(1, 1, 1, 0.04)
+	_card_style.set_corner_radius_all(12)
+	_card_style.set_border_width_all(1)
+	_card_style.border_color = Color(1, 1, 1, 0.08)
+	_card_style.set_content_margin_all(15)
+	
+	# Buy Button Style (Elegant Gold)
+	_btn_buy_style = StyleBoxFlat.new()
+	_btn_buy_style.bg_color = Color(0.85, 0.65, 0.1, 0.8)
+	_btn_buy_style.set_corner_radius_all(8)
+	_btn_buy_style.set_border_width_all(1)
+	_btn_buy_style.border_color = Color(1, 0.9, 0.5, 0.3)
+	
+	# Control Style (Muted Circular)
+	_btn_control_style = StyleBoxFlat.new()
+	_btn_control_style.bg_color = Color(1, 1, 1, 0.1)
+	_btn_control_style.set_corner_radius_all(4)
+
+func _update_coins():
+	coin_lbl.text = \"Balance: \" + str(GameManager.money) + \"c\"
+
+func _populate_items():
+	if not grid: return
+	for n in grid.get_children(): n.queue_free()
+	
+	# Pull items from centralized database
+	var shop_items = ItemDB.get_all_shop_items()
+	
+	for item in shop_items:
+		var item_card = PanelContainer.new()
+		item_card.add_theme_stylebox_override(\"panel\", _card_style)
+		item_card.custom_minimum_size = Vector2(185, 250)
+		# Reactive Hover Effect (Highlight Only)
+		item_card.mouse_entered.connect(func():
+			var hover_style = _card_style.duplicate()
+			hover_style.border_color = Color(1, 0.8, 0, 0.4)
+			item_card.add_theme_stylebox_override(\"panel\", hover_style)
+		)
+		item_card.mouse_exited.connect(func():
+			item_card.add_theme_stylebox_override(\"panel\", _card_style)
+		)
+		
+		var vbox = VBoxContainer.new()
+		vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		vbox.add_theme_constant_override(\"separation\", 12)
+		item_card.add_child(vbox)
+		
+		# --- Product Details ---
+		var icon_lbl = Label.new()
+		icon_lbl.text = item.icon
+		icon_lbl.add_theme_font_size_override(\"font_size\", 32)
+		icon_lbl.horizontal_alignment = 1
+		vbox.add_child(icon_lbl)
+		
+		var name_lbl = Label.new()
+		name_lbl.text = item.name
+		name_lbl.horizontal_alignment = 1
+		name_lbl.add_theme_font_size_override(\"font_size\", 14)
+		vbox.add_child(name_lbl)
+		
+		var desc_lbl = Label.new()
+		desc_lbl.text = item.desc
+		desc_lbl.horizontal_alignment = 1
+		desc_lbl.modulate = Color(1, 1, 1, 0.6)
+		desc_lbl.add_theme_font_size_override(\"font_size\", 10)
+		vbox.add_child(desc_lbl)
+		
+		# --- Quantity Bar ---
+		var bar_panel = PanelContainer.new()
+		var bar_style = StyleBoxFlat.new()
+		bar_style.bg_color = Color(0, 0, 0, 0.2)
+		bar_style.set_corner_radius_all(10)
+		bar_panel.add_theme_stylebox_override(\"panel\", bar_style)
+		vbox.add_child(bar_panel)
+		
+		var ctrl_hbox = HBoxContainer.new()
+		ctrl_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		bar_panel.add_child(ctrl_hbox)
+		
+		var btn_minus = Button.new()
+		btn_minus.text = \" - \"
+		btn_minus.flat = true
+		ctrl_hbox.add_child(btn_minus)
+		
+		var qty_lbl = Label.new()
+		qty_lbl.text = \"1\"
+		qty_lbl.custom_minimum_size = Vector2(40, 0)
+		qty_lbl.horizontal_alignment = 1
+		qty_lbl.add_theme_font_size_override(\"font_size\", 16)
+		ctrl_hbox.add_child(qty_lbl)
+		
+		var btn_plus = Button.new()
+		btn_plus.text = \" + \"
+		btn_plus.flat = true
+		ctrl_hbox.add_child(btn_plus)
+		
+		var btn_max = Button.new()
+		btn_max.text = \"MAX\"
+		btn_max.flat = true
+		btn_max.add_theme_font_size_override(\"font_size\", 9)
+		btn_max.modulate = Color(1, 0.8, 0.4)
+		ctrl_hbox.add_child(btn_max)
+		
+		# --- Action Button ---
+		var buy_btn = Button.new()
+		buy_btn.add_theme_stylebox_override(\"normal\", _btn_buy_style)
+		buy_btn.add_theme_stylebox_override(\"hover\", _btn_buy_style)
+		buy_btn.text = \"Buy\"
+		vbox.add_child(buy_btn)
+		
+		# Logic
+		var data = {\"qty\": 1}
+		var update_ui = func():
+			qty_lbl.text = str(data.qty)
+			var total = data.qty * item.price
+			buy_btn.text = \"Buy (%dc)\" % total
+			var can_afford = total <= GameManager.money and GameManager.money >= item.price
+			buy_btn.disabled = not can_afford
+			buy_btn.modulate = Color.WHITE if can_afford else Color(1, 1, 1, 0.4)
+			if not can_afford:
+				buy_btn.text = \"Limit Reached!\" if GameManager.money >= item.price else \"Insufficient!\"
+
+		btn_minus.pressed.connect(func():
+			data.qty = max(1, data.qty - 1)
+			update_ui.call()
+		)
+		btn_plus.pressed.connect(func():
+			data.qty += 1
+			update_ui.call()
+		)
+		btn_max.pressed.connect(func():
+			data.qty = max(1, floor(float(GameManager.money) / item.price))
+			update_ui.call()
+		)
+		buy_btn.pressed.connect(func():
+			_on_item_purchased(item, data.qty)
+		)
+		
+		update_ui.call()
+		grid.add_child(item_card)
+
+func _on_item_purchased(item, count):
+	var total_cost = item.price * count
+	if GameManager.buy_item(item.id, count, total_cost):
+		_update_coins()
+		_populate_items() # Full UI Refresh
+		var flash = create_tween()
+		flash.tween_property(coin_lbl, \"modulate\", Color(0.5, 2.0, 0.5), 0.1)
+		flash.tween_property(coin_lbl, \"modulate\", Color.WHITE, 0.2)
+	else:
+		_animate_fail_purchase()
+
+func _animate_fail_purchase():
+	var tween = create_tween()
+	var orig_pos = coin_lbl.position
+	for i in range(3):
+		tween.tween_property(coin_lbl, \"position:x\", orig_pos.x + 5, 0.05)
+		tween.tween_property(coin_lbl, \"position:x\", orig_pos.x - 5, 0.05)
+	tween.tween_property(coin_lbl, \"position:x\", orig_pos.x, 0.05)
+	
+	coin_lbl.add_theme_color_override(\"font_color\", Color.RED)
+	var timer_tween = create_tween()
+	timer_tween.tween_interval(0.5)
+	timer_tween.tween_callback(func(): coin_lbl.remove_theme_color_override(\"font_color\"))
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_glass"]
+bg_color = Color(0.1, 0.1, 0.12, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 20
+shadow_offset = Vector2(0, 10)
+
+[node name="ShopPopup" type="CanvasLayer" unique_id=1431244252]
+layer = 100
+script = SubResource("GDScript_shop_popup")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1996464392]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="Panel" parent="." unique_id=1373202058]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -346.0
+offset_top = -242.0
+offset_right = 364.0
+offset_bottom = 244.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_glass")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel" unique_id=1570547102]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 25.0
+offset_right = -25.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 15
+
+[node name="Header" type="HBoxContainer" parent="Panel/VBoxContainer" unique_id=589211207]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Panel/VBoxContainer/Header" unique_id=1539619206]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
+theme_override_font_sizes/font_size = 28
+text = "Pet Food Shop"
+
+[node name="CoinLabel" type="Label" parent="Panel/VBoxContainer/Header" unique_id=455444345]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Balance: 100c"
+
+[node name="HSeparator" type="HSeparator" parent="Panel/VBoxContainer" unique_id=1565525776]
+modulate = Color(1, 1, 1, 0.2)
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/VBoxContainer" unique_id=1080650534]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Grid" type="GridContainer" parent="Panel/VBoxContainer/ScrollContainer" unique_id=443958270]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 30
+theme_override_constants/v_separation = 30
+columns = 3
+
+[node name="Footer" type="Label" parent="Panel/VBoxContainer" unique_id=1384378954]
+modulate = Color(1, 1, 1, 0.4)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Press SPACE or E to return to Town"
+horizontal_alignment = 1

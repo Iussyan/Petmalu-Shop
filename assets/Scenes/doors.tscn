@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://dh42umcm72bia"]
+
+[ext_resource type="Script" uid="uid://di2cx4phku2bx" path="res://assets/Scenes/doors.gd" id="1_c0owo"]
+[ext_resource type="Texture2D" uid="uid://4v61vgxck812" path="res://assets/Tile Assets/House_Tileset.png" id="1_q2won"]
+[ext_resource type="PackedScene" uid="uid://caaxvbqm4td3f" path="res://assets/Scenes/component/interactable.tscn" id="3_u4lg4"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c0owo"]
+atlas = ExtResource("1_q2won")
+region = Rect2(544, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v3h6k"]
+atlas = ExtResource("1_q2won")
+region = Rect2(544, 16, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_u4lg4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c0owo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v3h6k")
+}],
+"loop": true,
+"name": &"close",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v3h6k")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v3h6k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c0owo")
+}],
+"loop": true,
+"name": &"open",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qwktp"]
+size = Vector2(16, 14)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ed6il"]
+size = Vector2(16, 33)
+
+[node name="Doors" type="StaticBody2D" unique_id=774265723]
+script = ExtResource("1_c0owo")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=194011416]
+sprite_frames = SubResource("SpriteFrames_u4lg4")
+animation = &"close"
+autoplay = "default"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2073833328]
+shape = SubResource("RectangleShape2D_qwktp")
+
+[node name="Interactable" parent="." unique_id=1194522367 instance=ExtResource("3_u4lg4")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactable" unique_id=909749187]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_ed6il")
+debug_color = Color(0.6025809, 0.53401816, 0.27797306, 0.41960785)

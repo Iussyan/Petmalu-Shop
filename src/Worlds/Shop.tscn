@@ -1,0 +1,299 @@
+[gd_scene format=3 uid="uid://ckylmr2tsxiq5"]
+
+[ext_resource type="PackedScene" uid="uid://c8j1k2m3n4p5" path="res://src/Player/Player.tscn" id="1_player"]
+[ext_resource type="Script" uid="uid://c3cmq160mfhdw" path="res://src/Components/Entrance.gd" id="2_entrance_script"]
+[ext_resource type="PackedScene" uid="uid://c6xk7b8wan3l" path="res://src/NPCs/BaseNPC.tscn" id="4_npc_scene"]
+
+[sub_resource type="GDScript" id="GDScript_shop"]
+script/source = "extends Node2D
+
+func _ready():
+	# Modular Teleport Placement
+	if GameManager.target_entrance_id != -1:
+		_position_player_at_entrance(GameManager.target_entrance_id)
+		GameManager.target_entrance_id = -1
+		
+	if has_node(\"/root/FadeOverlay\"):
+		get_node(\"/root/FadeOverlay\").fade_in()
+	
+	# Update Shop Evolution
+	_update_shop_evolution()
+	
+	# Spawn pets that are in the shop
+	for pet_data in GameManager.rescued_pets_data:
+		_spawn_pet(pet_data)
+
+func _position_player_at_entrance(id):
+	for node in get_tree().get_nodes_in_group(\"entrances\"):
+		if \"my_id\" in node and node.my_id == id:
+			$Player.global_position = node.global_position + node.spawn_offset
+			$Player.set_facing_direction(GameManager.player_facing_on_spawn)
+			return
+
+func _spawn_pet(data):
+	var pet_scene = load(\"res://src/Pets/BasePet.tscn\")
+	var pet = pet_scene.instantiate()
+	pet.pet_type = data.type
+	pet.pet_custom_name = data.get(\"custom_name\", \"\")
+	pet.wild_behavior = data.get(\"wild_behavior\", 0)
+	pet.shop_behavior = data.get(\"shop_behavior\", 1) # Default to Loyal in shop
+	pet.current_state = 1 # SHOP state
+	pet.hunger = data.hunger
+	pet.health = data.health
+	pet.happiness = data.happiness
+	
+	# Persistence Logic - Restore position if it exists
+	if data.has(\"position\"):
+		pet.global_position = data.position
+	else:
+		pet.position = Vector2(randf_range(-200, 200), randf_range(-100, 100))
+		
+	$PetSanctuary/Pets.add_child(pet)
+
+func _notification(what):
+	if what == NOTIFICATION_EXIT_TREE:
+		_save_shop_pets()
+
+func _save_shop_pets():
+	var new_data = []
+	var pets_container = get_node_or_null(\"PetSanctuary/Pets\")
+	if pets_container:
+		for pet in pets_container.get_children():
+			if pet.has_method(\"get_stats_data\"):
+				new_data.append(pet.get_stats_data())
+		GameManager.rescued_pets_data = new_data
+
+func _update_shop_evolution():
+	var lvl = GameManager.shop_level
+	if has_node(\"Nursery\"): $Nursery.visible = lvl >= 2
+	if has_node(\"Clinic\"): $Clinic.visible = lvl >= 3
+	if has_node(\"Garden\"): $Garden.visible = lvl >= 4
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_h"]
+size = Vector2(1200, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_v"]
+size = Vector2(50, 800)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
+size = Vector2(120, 60)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_room_h"]
+size = Vector2(500, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_room_v"]
+size = Vector2(50, 500)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_room_h_large"]
+size = Vector2(800, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_room_v_large"]
+size = Vector2(50, 400)
+
+[node name="Shop" type="Node2D" unique_id=1089006586]
+script = SubResource("GDScript_shop")
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=1391474081]
+layer = -1
+
+[node name="Floor" type="ColorRect" parent="Background" unique_id=1918639551]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.321569, 0.223529, 0.141176, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="Walls" type="StaticBody2D" parent="." unique_id=1350057922]
+collision_mask = 0
+
+[node name="Collision_N" type="CollisionShape2D" parent="Walls" unique_id=1877281649]
+position = Vector2(0, -375)
+shape = SubResource("RectangleShape2D_wall_h")
+
+[node name="Collision_S" type="CollisionShape2D" parent="Walls" unique_id=1130656248]
+position = Vector2(0, 375)
+shape = SubResource("RectangleShape2D_wall_h")
+
+[node name="Collision_W" type="CollisionShape2D" parent="Walls" unique_id=540532676]
+position = Vector2(-575, 0)
+shape = SubResource("RectangleShape2D_wall_v")
+
+[node name="Collision_E" type="CollisionShape2D" parent="Walls" unique_id=1538441797]
+position = Vector2(575, 0)
+shape = SubResource("RectangleShape2D_wall_v")
+
+[node name="VisualWalls" type="Node2D" parent="Walls" unique_id=960688796]
+
+[node name="Wall_N" type="ColorRect" parent="Walls/VisualWalls" unique_id=1391820570]
+offset_left = -600.0
+offset_top = -400.0
+offset_right = 600.0
+offset_bottom = -350.0
+color = Color(0.192157, 0.133333, 0.0823529, 1)
+
+[node name="Wall_S" type="ColorRect" parent="Walls/VisualWalls" unique_id=1943379721]
+offset_left = -600.0
+offset_top = 350.0
+offset_right = 600.0
+offset_bottom = 400.0
+color = Color(0.192157, 0.133333, 0.0823529, 1)
+
+[node name="Wall_W" type="ColorRect" parent="Walls/VisualWalls" unique_id=268894271]
+offset_left = -600.0
+offset_top = -400.0
+offset_right = -550.0
+offset_bottom = 400.0
+color = Color(0.192157, 0.133333, 0.0823529, 1)
+
+[node name="Wall_E" type="ColorRect" parent="Walls/VisualWalls" unique_id=668915820]
+offset_left = 550.0
+offset_top = -400.0
+offset_right = 600.0
+offset_bottom = 400.0
+color = Color(0.192157, 0.133333, 0.0823529, 1)
+
+[node name="PetSanctuary" type="Node2D" parent="." unique_id=122890465]
+
+[node name="Pen" type="ColorRect" parent="PetSanctuary" unique_id=1207984044]
+offset_left = -400.0
+offset_top = -200.0
+offset_right = 400.0
+offset_bottom = 200.0
+color = Color(0.439216, 0.313726, 0.207843, 1)
+
+[node name="Label" type="Label" parent="PetSanctuary/Pen" unique_id=894419636]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 110.0
+offset_bottom = 36.0
+text = "SAFE HAVEN"
+
+[node name="Pets" type="Node2D" parent="PetSanctuary" unique_id=653615487]
+
+[node name="Shopkeeper" parent="." unique_id=623674348 instance=ExtResource("4_npc_scene")]
+position = Vector2(422, -281)
+npc_name = "Walter"
+npc_role = "Sanctuary Manager"
+
+[node name="ExitDoor" type="Area2D" parent="." unique_id=512675354 groups=["entrances"]]
+position = Vector2(0, 360)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_entrance_script")
+target_scene = "res://src/Worlds/Main.tscn"
+spawn_offset = Vector2(0, -60)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor" unique_id=1983928511]
+shape = SubResource("RectangleShape2D_door")
+
+[node name="Label" type="Label" parent="ExitDoor" unique_id=1473824509]
+offset_left = -50.0
+offset_top = -40.0
+offset_right = 50.0
+offset_bottom = -14.0
+text = "EXIT TO TOWN"
+horizontal_alignment = 1
+
+[node name="Player" parent="." unique_id=243418967 instance=ExtResource("1_player")]
+
+[node name="Nursery" type="Node2D" parent="." unique_id=425031711]
+visible = false
+
+[node name="Floor" type="ColorRect" parent="Nursery" unique_id=1105482]
+offset_left = 600.0
+offset_top = -400.0
+offset_right = 1100.0
+offset_bottom = 100.0
+color = Color(0.188235, 0.407843, 0.501961, 1)
+
+[node name="Label" type="Label" parent="Nursery" unique_id=2016782103]
+offset_left = 620.0
+offset_top = -380.0
+offset_right = 720.0
+offset_bottom = -354.0
+text = "NURSERY (Level 3)"
+
+[node name="Walls" type="StaticBody2D" parent="Nursery" unique_id=1395037936]
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Nursery/Walls" unique_id=858614442]
+position = Vector2(850, -425)
+shape = SubResource("RectangleShape2D_room_h")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Nursery/Walls" unique_id=1616267983]
+position = Vector2(850, 125)
+shape = SubResource("RectangleShape2D_room_h")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Nursery/Walls" unique_id=1725292833]
+position = Vector2(1125, -150)
+shape = SubResource("RectangleShape2D_room_v")
+
+[node name="Clinic" type="Node2D" parent="." unique_id=1129282070]
+visible = false
+
+[node name="Floor" type="ColorRect" parent="Clinic" unique_id=1957973469]
+offset_left = -1100.0
+offset_top = -400.0
+offset_right = -600.0
+offset_bottom = 100.0
+color = Color(0.407843, 0.647059, 0.607843, 1)
+
+[node name="Label" type="Label" parent="Clinic" unique_id=1155921236]
+offset_left = -1080.0
+offset_top = -380.0
+offset_right = -940.0
+offset_bottom = -354.0
+text = "CLINIC (Level 5)"
+
+[node name="Walls" type="StaticBody2D" parent="Clinic" unique_id=2031925310]
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Clinic/Walls" unique_id=789827440]
+position = Vector2(-850, -425)
+shape = SubResource("RectangleShape2D_room_h")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Clinic/Walls" unique_id=2069790570]
+position = Vector2(-850, 125)
+shape = SubResource("RectangleShape2D_room_h")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Clinic/Walls" unique_id=941198764]
+position = Vector2(-1125, -150)
+shape = SubResource("RectangleShape2D_room_v")
+
+[node name="Garden" type="Node2D" parent="." unique_id=1983176988]
+visible = false
+
+[node name="Floor" type="ColorRect" parent="Garden" unique_id=193356721]
+offset_left = -400.0
+offset_top = -800.0
+offset_right = 400.0
+offset_bottom = -400.0
+color = Color(0.133333, 0.364706, 0.14902, 1)
+
+[node name="Label" type="Label" parent="Garden" unique_id=401976436]
+offset_left = -380.0
+offset_top = -780.0
+offset_right = -240.0
+offset_bottom = -754.0
+text = "GARDEN (Level 8)"
+
+[node name="Walls" type="StaticBody2D" parent="Garden" unique_id=30479639]
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Garden/Walls" unique_id=1947200915]
+position = Vector2(0, -825)
+shape = SubResource("RectangleShape2D_room_h_large")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Garden/Walls" unique_id=1660953136]
+position = Vector2(-425, -600)
+shape = SubResource("RectangleShape2D_room_v_large")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Garden/Walls" unique_id=364243514]
+position = Vector2(425, -600)
+shape = SubResource("RectangleShape2D_room_v_large")
+
+[connection signal="body_entered" from="ExitDoor" to="ExitDoor" method="_on_body_entered"]

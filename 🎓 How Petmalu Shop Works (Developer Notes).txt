@@ -1,0 +1,19 @@
+🎓 How Petmalu Shop Works (Developer Lesson)
+Building a game like this requires three main concepts to work together:
+
+1. Autoloads (Permanent Brains)
+In Godot, normally everything disappears when you switch scenes. To prevent this, we use Autoloads (GameManager and FadeOverlay).
+
+GameManager: This script lives forever. It stores your money and your list of rescued pets. When you're in the Forest and rescue a Rabbit, the data is saved in this global "Brain."
+FadeOverlay: This is a black screen that stays on top of the entire game. Because it's an Autoload, it doesn't get destroyed when the world switches to the shop interior.
+2. The Cinema "Fade" Trick
+When you walk into a door, we use a three-step dance:
+
+Fade Out: The FadeOverlay plays an animation to turn the screen completely black.
+Switch: While the screen is black, the code instantly swaps the "Town" scene for the "Shop" scene.
+Fade In: Once the new scene is ready, it tells the FadeOverlay to become transparent again. This makes the transition feel professional and "Cozy."
+3. Data-Driven Spawning
+We don't actually move the "Pet" object from one scene to another. Instead:
+
+Capture: When you rescue a pet, we save its stats (Hunger: 80, Health: 100, Type: "Dog") into a list in the GameManager.
+Reconstruct: When you enter the Shop, the shop's script looks at that list and "re-creates" the pet exactly as it was. This is much more stable than trying to drag objects between levels!

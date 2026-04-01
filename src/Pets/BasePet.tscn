@@ -1,0 +1,107 @@
+[gd_scene format=3 uid="uid://pet1y203a4b5"]
+
+[ext_resource type="Script" uid="uid://bn6fb5bek0quh" path="res://src/Pets/BasePet.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cw5cj01hcpd2b" path="res://icon.svg" id="2_texture"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pet"]
+radius = 16.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interact"]
+radius = 48.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hunger"]
+bg_color = Color(1, 0.54902, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_health"]
+bg_color = Color(1, 0.2, 0.2, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_happy"]
+bg_color = Color(0.2, 0.6, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="BasePet" type="CharacterBody2D" unique_id=2065790875]
+collision_layer = 4
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=718911276]
+modulate = Color(0.615686, 0.615686, 0.615686, 1)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("2_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=850157714]
+shape = SubResource("CircleShape2D_pet")
+
+[node name="InteractionArea" type="Area2D" parent="." unique_id=609863433]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=898169827]
+shape = SubResource("CircleShape2D_interact")
+
+[node name="NameLabel" type="Label" parent="." unique_id=1785855792]
+offset_left = -40.0
+offset_top = -28.0
+offset_right = 40.0
+offset_bottom = -12.0
+theme_override_font_sizes/font_size = 10
+text = "Pet Name"
+horizontal_alignment = 1
+
+[node name="InteractPrompt" type="Label" parent="." unique_id=1037849749]
+offset_left = -40.0
+offset_top = 22.0
+offset_right = 40.0
+offset_bottom = 45.0
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_font_sizes/font_size = 8
+text = "[E] Interact"
+horizontal_alignment = 1
+
+[node name="StatsUI" type="Control" parent="." unique_id=5627179]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -20.0
+offset_top = -45.0
+offset_right = 20.0
+offset_bottom = -25.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="StatsUI" unique_id=1151020132]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 2
+
+[node name="HungerBar" type="ProgressBar" parent="StatsUI/VBoxContainer" unique_id=1558265305]
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_hunger")
+value = 100.0
+show_percentage = false
+
+[node name="HealthBar" type="ProgressBar" parent="StatsUI/VBoxContainer" unique_id=1321675812]
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_health")
+value = 100.0
+show_percentage = false
+
+[node name="HappyBar" type="ProgressBar" parent="StatsUI/VBoxContainer" unique_id=1007314496]
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_happy")
+value = 50.0
+show_percentage = false
+
+[connection signal="body_entered" from="InteractionArea" to="." method="_on_interaction_area_body_entered"]
+[connection signal="body_exited" from="InteractionArea" to="." method="_on_interaction_area_body_exited"]

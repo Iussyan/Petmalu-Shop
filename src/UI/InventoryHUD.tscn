@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://c6xk7b8wan3h"]
+
+[sub_resource type="GDScript" id="GDScript_hud"]
+script/source = "extends CanvasLayer
+
+@onready var coin_lbl = $HBoxContainer/CoinContainer/Label
+@onready var food_lbl = $HBoxContainer/FoodContainer/Label
+
+func _ready():
+	GameManager.stats_changed.connect(_on_stats_changed)
+	GameManager.inventory_changed.connect(_on_inventory_changed)
+	_update_all()
+
+func _update_all():
+	coin_lbl.text = str(GameManager.money)
+	food_lbl.text = str(GameManager.inventory.get(\"food\", 0))
+
+func _on_stats_changed(stat_name, new_value):
+	if stat_name == \"money\":
+		coin_lbl.text = str(new_value)
+
+func _on_inventory_changed(item, amount):
+	if item == \"food\":
+		food_lbl.text = str(amount)
+"
+
+[node name="InventoryHUD" type="CanvasLayer"]
+script = SubResource("GDScript_hud")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 300.0
+offset_bottom = 60.0
+theme_override_constants/separation = 20
+
+[node name="CoinContainer" type="HBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="Icon" type="Label" parent="HBoxContainer/CoinContainer"]
+layout_mode = 2
+text = "💰"
+
+[node name="Label" type="Label" parent="HBoxContainer/CoinContainer"]
+layout_mode = 2
+text = "100"
+
+[node name="FoodContainer" type="HBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="Icon" type="Label" parent="HBoxContainer/FoodContainer"]
+layout_mode = 2
+text = "🥖"
+
+[node name="Label" type="Label" parent="HBoxContainer/FoodContainer"]
+layout_mode = 2
+text = "10"

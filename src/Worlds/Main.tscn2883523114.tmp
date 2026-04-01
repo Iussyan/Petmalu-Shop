@@ -1,0 +1,311 @@
+[gd_scene format=3 uid="uid://d1e2f3g4h5i6"]
+
+[ext_resource type="PackedScene" uid="uid://c8j1k2m3n4p5" path="res://src/Player/Player.tscn" id="1_player_scene"]
+[ext_resource type="PackedScene" uid="uid://pet1y203a4b5" path="res://src/Pets/BasePet.tscn" id="2_pet_scene"]
+[ext_resource type="Script" uid="uid://c3cmq160mfhdw" path="res://src/Components/Entrance.gd" id="3_entrance_script"]
+
+[sub_resource type="GDScript" id="GDScript_main"]
+script/source = "extends Node2D
+
+@onready var forest_lock = $World/ForestArea/LockOverlay
+@onready var beach_lock = $World/BeachArea/LockOverlay
+@onready var mountain_lock = $World/MountainArea/LockOverlay
+
+func _ready():
+	# Modular Teleport Placement
+	if GameManager.target_entrance_id != -1:
+		_position_player_at_entrance(GameManager.target_entrance_id)
+		GameManager.target_entrance_id = -1 # Clear it
+	
+	if has_node(\"/root/FadeOverlay\"):
+		get_node(\"/root/FadeOverlay\").fade_in()
+		
+	if GameManager.has_signal(\"area_unlocked\"):
+		GameManager.area_unlocked.connect(_on_area_unlocked)
+	
+	# Initial visibility
+	forest_lock.visible = !GameManager.is_area_unlocked(\"Forest\")
+	beach_lock.visible = !GameManager.is_area_unlocked(\"Beach\")
+	mountain_lock.visible = !GameManager.is_area_unlocked(\"Mountain\")
+
+func _position_player_at_entrance(id):
+	# Find all Entrance nodes in the world
+	for node in get_tree().get_nodes_in_group(\"entrances\"):
+		if \"my_id\" in node and node.my_id == id:
+			$Player.global_position = node.global_position + node.spawn_offset
+			$Player.set_facing_direction(GameManager.player_facing_on_spawn)
+			return
+
+
+func _on_area_unlocked(area_name):
+	match area_name:
+		\"Forest\": forest_lock.hide()
+		\"Beach\": beach_lock.hide()
+		\"Mountain\": mountain_lock.hide()
+"
+
+[sub_resource type="RectangleShape2D" id="World_H"]
+size = Vector2(4001.5, 76)
+
+[sub_resource type="RectangleShape2D" id="World_V"]
+size = Vector2(96, 2131.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
+size = Vector2(100, 50)
+
+[node name="Main" type="Node2D" unique_id=1110268934]
+script = SubResource("GDScript_main")
+
+[node name="World" type="Node2D" parent="." unique_id=2025246496]
+
+[node name="MountainArea" type="ColorRect" parent="World" unique_id=1]
+offset_left = -1000.0
+offset_top = -3000.0
+offset_right = 1000.0
+offset_bottom = -1000.0
+color = Color(0.439216, 0.501961, 0.560784, 1)
+
+[node name="LockOverlay" type="ColorRect" parent="World/MountainArea" unique_id=591161791]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.588235)
+
+[node name="Label" type="Label" parent="World/MountainArea/LockOverlay" unique_id=249754942]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -13.0
+offset_right = 100.0
+offset_bottom = 13.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "AREA LOCKED: Shop Level 4 Required"
+horizontal_alignment = 1
+
+[node name="TownArea" type="ColorRect" parent="World" unique_id=2]
+offset_left = -1000.0
+offset_top = -1000.0
+offset_right = 1000.0
+offset_bottom = 1000.0
+color = Color(0.882353, 0.776471, 0.6, 1)
+
+[node name="ForestArea" type="ColorRect" parent="World" unique_id=3]
+offset_left = -3000.0
+offset_top = -1000.0
+offset_right = -1000.0
+offset_bottom = 1000.0
+color = Color(0.176471, 0.352941, 0.152941, 1)
+
+[node name="LockOverlay" type="ColorRect" parent="World/ForestArea" unique_id=1769400588]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.588235)
+
+[node name="Label" type="Label" parent="World/ForestArea/LockOverlay" unique_id=1404669847]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -13.0
+offset_right = 100.0
+offset_bottom = 13.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "AREA LOCKED: Shop Level 2 Required"
+horizontal_alignment = 1
+
+[node name="BeachArea" type="ColorRect" parent="World" unique_id=4]
+offset_left = -1000.0
+offset_top = 1000.0
+offset_right = 3000.0
+offset_bottom = 3000.0
+color = Color(0.980392, 0.815686, 0.180392, 1)
+
+[node name="LockOverlay" type="ColorRect" parent="World/BeachArea" unique_id=2127448700]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.588235)
+
+[node name="Label" type="Label" parent="World/BeachArea/LockOverlay" unique_id=1739841446]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -13.0
+offset_right = 100.0
+offset_bottom = 13.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "AREA LOCKED: Shop Level 3 Required"
+horizontal_alignment = 1
+
+[node name="Pets" type="Node2D" parent="World" unique_id=1372621631]
+
+[node name="WildDog" parent="World/Pets" unique_id=235823924 instance=ExtResource("2_pet_scene")]
+position = Vector2(300, 300)
+pet_type = "Lost Dog"
+pet_id = "dog_01"
+
+[node name="WildCat" parent="World/Pets" unique_id=2067591026 instance=ExtResource("2_pet_scene")]
+position = Vector2(-200, -200)
+pet_type = "Scared Cat"
+wild_behavior = 2
+shop_behavior = 5
+pet_id = "cat_01"
+
+[node name="ForestRabbit" parent="World/Pets" unique_id=2122541787 instance=ExtResource("2_pet_scene")]
+position = Vector2(-2000, 0)
+pet_type = "Wild Rabbit"
+shop_behavior = 5
+pet_id = "rabbit_01"
+
+[node name="BeachTurtle" parent="World/Pets" unique_id=1080650534 instance=ExtResource("2_pet_scene")]
+position = Vector2(1000, 2000)
+pet_type = "Sea Turtle"
+wild_behavior = 3
+shop_behavior = 0
+pet_id = "turtle_01"
+
+[node name="Labels" type="Node2D" parent="World" unique_id=1191761177]
+
+[node name="TownLabel" type="Label" parent="World/Labels" unique_id=1967810888]
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = -24.0
+text = "TOWN (Residential)"
+horizontal_alignment = 1
+
+[node name="ForestLabel" type="Label" parent="World/Labels" unique_id=1842149875]
+offset_left = -2100.0
+offset_top = -50.0
+offset_right = -1900.0
+offset_bottom = -24.0
+text = "THE DEEP FOREST"
+horizontal_alignment = 1
+
+[node name="MountainLabel" type="Label" parent="World/Labels" unique_id=410848485]
+offset_left = -100.0
+offset_top = -2050.0
+offset_right = 100.0
+offset_bottom = -2024.0
+text = "THE NORTHERN PEAKS"
+horizontal_alignment = 1
+
+[node name="BeachLabel" type="Label" parent="World/Labels" unique_id=1262598565]
+offset_left = 900.0
+offset_top = 1950.0
+offset_right = 1100.0
+offset_bottom = 1976.0
+text = "THE GOLDEN BEACH"
+horizontal_alignment = 1
+
+[node name="WorldBorder" type="StaticBody2D" parent="World" unique_id=240352262]
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/WorldBorder" unique_id=470019423]
+position = Vector2(-2.5, -3041)
+shape = SubResource("World_H")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="World/WorldBorder" unique_id=112195257]
+position = Vector2(1002, 3036)
+shape = SubResource("World_H")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="World/WorldBorder" unique_id=1375594090]
+position = Vector2(-1046, -2065.5)
+shape = SubResource("World_V")
+
+[node name="CollisionShape2D9" type="CollisionShape2D" parent="World/WorldBorder" unique_id=660200955]
+position = Vector2(2067, 950)
+rotation = 1.5707964
+shape = SubResource("World_V")
+
+[node name="CollisionShape2D5" type="CollisionShape2D" parent="World/WorldBorder" unique_id=104878871]
+position = Vector2(-2149.25, -1051)
+rotation = 1.5707964
+shape = SubResource("World_V")
+
+[node name="CollisionShape2D7" type="CollisionShape2D" parent="World/WorldBorder" unique_id=1240433323]
+position = Vector2(-2066, 1048)
+rotation = 1.5707964
+shape = SubResource("World_V")
+
+[node name="CollisionShape2D6" type="CollisionShape2D" parent="World/WorldBorder" unique_id=1165756132]
+position = Vector2(-3048, 53)
+shape = SubResource("World_V")
+
+[node name="CollisionShape2D8" type="CollisionShape2D" parent="World/WorldBorder" unique_id=705469476]
+position = Vector2(-1048, 2107)
+shape = SubResource("World_V")
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="World/WorldBorder" unique_id=632447360]
+position = Vector2(3047, 1992)
+shape = SubResource("World_V")
+
+[node name="CollisionShape2D10" type="CollisionShape2D" parent="World/WorldBorder" unique_id=538426025]
+position = Vector2(1049, -72)
+shape = SubResource("World_V")
+
+[node name="CollisionShape2D11" type="CollisionShape2D" parent="World/WorldBorder" unique_id=609782999]
+position = Vector2(1045, -1929)
+shape = SubResource("World_V")
+
+[node name="ShopBuilding" type="Node2D" parent="World" unique_id=834374188]
+position = Vector2(0, -600)
+
+[node name="Structure" type="ColorRect" parent="World/ShopBuilding" unique_id=298151903]
+offset_left = -150.0
+offset_top = -200.0
+offset_right = 150.0
+offset_bottom = 100.0
+color = Color(0.407843, 0.282353, 0.180392, 1)
+
+[node name="Roof" type="ColorRect" parent="World/ShopBuilding" unique_id=1560319662]
+offset_left = -170.0
+offset_top = -220.0
+offset_right = 170.0
+offset_bottom = -180.0
+color = Color(0.258824, 0.176471, 0.117647, 1)
+
+[node name="Entrance" type="Area2D" parent="World/ShopBuilding" unique_id=2039766008 groups=["entrances"]]
+position = Vector2(0, 80)
+script = ExtResource("3_entrance_script")
+target_scene = "res://src/Worlds/Shop.tscn"
+spawn_offset = Vector2(0, 60)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/ShopBuilding/Entrance" unique_id=1207814554]
+shape = SubResource("RectangleShape2D_door")
+
+[node name="Label" type="Label" parent="World/ShopBuilding" unique_id=1503316806]
+offset_left = -60.0
+offset_top = -20.0
+offset_right = 60.0
+offset_bottom = 6.0
+text = "PETMALU SHOP"
+horizontal_alignment = 1
+
+[node name="Player" parent="." unique_id=1713751851 instance=ExtResource("1_player_scene")]
+
+[connection signal="body_entered" from="World/ShopBuilding/Entrance" to="World/ShopBuilding/Entrance" method="_on_body_entered"]
