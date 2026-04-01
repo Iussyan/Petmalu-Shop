@@ -67,7 +67,7 @@ func _on_area_unlocked(area_name):
 size = Vector2(32.000183, 3136)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
-size = Vector2(14.285736, 30.035797)
+size = Vector2(34.28569, 30.035797)
 
 [node name="Main" type="Node2D" unique_id=1110268934]
 script = SubResource("GDScript_main")
@@ -397,7 +397,7 @@ tile_set = ExtResource("4_7vt5c")
 
 [node name="Doodads" type="TileMapLayer" parent="World/Town Layout/Houses" unique_id=267848843]
 scale = Vector2(0.99999964, 0.99999964)
-tile_map_data = PackedByteArray("AACj/6n/CgAHAAUAAACo/6v/CgACAAEAAACp/6n/CgABAAQAAACo/6n/CgABAAQAAACm/6n/CwAAAAAAARCk/6j/CQAeAAQAAACl/6n/CwAAAAAAAQCn/6j/CQAfAAQAAAA=")
+tile_map_data = PackedByteArray("AACo/6v/CgACAAEAAACm/6n/CwAAAAAAARCl/6n/CwAAAAAAAQCn/6j/CQAfAAQAAACk/6j/CQAeAAQAAACr/6n/CgAHAAUAAACn/6n/CgABAAQAAACk/6n/CgABAAQAAAA=")
 tile_set = ExtResource("4_7vt5c")
 
 [node name="Petshop" type="Area2D" parent="World/Town Layout/Houses" unique_id=2039766008 groups=["entrances"]]
@@ -408,7 +408,7 @@ target_scene = "res://src/Worlds/Shop.tscn"
 spawn_offset = Vector2(0, 60)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/Town Layout/Houses/Petshop" unique_id=1207814554]
-position = Vector2(50.82241, -26.89474)
+position = Vector2(-7.7490234, -28.323242)
 shape = SubResource("RectangleShape2D_door")
 
 [node name="Player" parent="." unique_id=1713751851 instance=ExtResource("1_player_scene")]
