@@ -1,69 +1,70 @@
-# Skelerelams 
+# 🐾 Petmalu Shop
 
-Welcome to Skelerealms, the framework for Bethesda-style Open World RPGs (Like Skyrim, Fallout New Vegas, etc.).  
-This addon aims to offer a solution to the most challenging technical challenges faced while engineering games like this. Gameplay is, however, not included.  
-For those familiar with Creation Engine's inner workings, Skelerealms seeks to primarily cover Actors, Cells, AI Packages, and Factions.  
-Skelerealms is designed in such a way where you can ignore or replace most of the working components, and allow easy integration into your own gameplay systems.
+Welcome to **Petmalu Shop**, a cozy 2D top-down simulation where exploration meets heart-warming management. Inspired by classics like *Stardew Valley* and *Pokémon*, you take on the role of a shop owner who inherited a legacy of love for animals.
 
-## What does it have?
+---
 
-- Inter-scene persistence of important objects
-- Inter-scene navigation
-- A basic framework for skills and attributes
-- Loot tables
-- Inventory system
-- Equipment system
-- NPC AI
-	- Behavious
-	- GOAP AI System
-	- Basic perception
-	- Schedules
-	- Patrol paths
-- Tools to assist development
-- Composable design
-	- Components for entities
-	- Components for items
-- Dungeon puzzle elements
-- Factions
-- Spells/Status Effects
-- Crime
-- Bartering
-- Spawn zones
-- Doors
+## 🌟 The Vision
 
-## What does it *not* have? 
+Your Lola left you more than just a shop; she left you a mission. Restore the **Petmalu Shop** by exploring the world, rescuing animals in need, and finding them their "forever homes."
 
-- Gameplay
-- Terrain
-- LOD system, chunks
-- UI
-- Dialogue
-- Quests (Ironically)
-- Combat
+---
 
-## How do I get started? 
+## 🔁 The Game Flow
 
+The cycle of Petmalu Shop is designed to be a rewarding, cozy journey:
 
-Visit the [documentation](docs/user%20guide/quick_start.md) for a quick start guide.
+### 1. **Explore** 🗺️
+Traverse through diverse biomes. Start in the cozy **Town**, then unlock the lush **Forest**, the sunny **Beach**, and the challenging **Mountain** areas.
 
+### 2. **Rescue** 🐕
+Perform field rescues or assist injured animals across the landscapes. Each rescue is unique, and the game remembers every friend you find.
 
-## What's the project status?
+### 3. **Care** 🍥
+Bring your rescues back to the shop. Manage their three core needs to ensure they thrive:
+- 🍖 **Hunger**: Keep them well-fed.
+- 💊 **Health**: Provide medicine and rest.
+- 🎾 **Happiness**: Interact and play through mini-games.
 
-The project is active. I am using this to develop my own game, and will occasionally push changes I make upstream.  
-Please note that the project is in an Alpha state, which means breaking changes can and will happen often. Plan around this. I plan to have feature and API stability once 1.0 is reached.
+### 4. **Adopt** ❤️
+Once your pets are healthy and happy, they are ready for adoption! Rehoming pets earns you **Coins** and **Reputation**, allowing you to upgrade your shop and unlock new areas.
 
-## What's in store?
+---
 
-- 0.6 (In Development)
-	- Redesigning the way entities are stored.
-	- Adding more tools.
-	- Writing more thorough documentation.
-	- Integrating NetworkGD.
-- 0.7
-	- Redesigning the save game system.
-	- Polish cross-scene navigation.
+## ✨ Key Features
 
+- **Cozy Aesthetics**: Beautiful 2D pixel-art style with smooth 8-way movement.
+- **Dynamic World**: A 2x2 grid world featuring distinct biomes and seamless transitions.
+- **Deep Management**: A robust pet system where every stat matters.
+- **Progression**: Unlock new areas by rescuing pets and reaching shop levels.
+- **Smart Tech**: Data-driven spawning ensures your pets "remember" their stats across the world.
 
-## Star History
+---
 
-[![Star History Chart](https://api.star-history.com/svg?repos=SlashScreen/skelerealms&type=Timeline&theme=dark)](https://star-history.com/#SlashScreen/skelerealms&Timeline)
+## 🚀 Development Roadmap
+
+- [x] **Phase 1**: Basic Movement & Camera
+- [x] **Phase 2**: World Layout & Character Animations
+- [ ] **Phase 3**: Pet Interaction & Stat System
+- [ ] **Phase 4**: Rescue Mechanics & Mini-Games
+- [ ] **Phase 5**: Shop Management UI & Adoption Flow
+- [ ] **Phase 6**: Biome Unlocks & Final Polish
+
+---
+
+## 🛠️ Getting Started (For Developers)
+
+- **Engine**: Godot 4.3+
+- **Language**: GDScript
+- **Assets**: Pixel Art (Various sources)
+
+### Project Structure
+- `src/Autoloads`: Permanent "brains" (GameManager, FadeOverlay).
+- `src/Player`: Movement and interaction logic.
+- `src/NPCs` & `src/Pets`: Entity templates and behaviors.
+- `src/Worlds`: 2D maps and biome layouts.
+- `src/UI`: Menus, HUD, and management interfaces.
+
+---
+
+*Made with ❤️ for pet lovers everywhere.*
