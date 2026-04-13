@@ -11,6 +11,8 @@ enum Behavior { WANDER, LOYAL, SKITTISH, LAZY, CURIOUS, PLAYFUL, GRUMPY, MISCHIE
 @export var move_speed: float = 120.0
 @export var low_hunger_threshold: float = 30.0
 @export var low_happiness_threshold: float = 30.0
+@export var pet_texture: Texture2D
+@export var pet_sprite_scale: Vector2 = Vector2.ONE
 
 @export_group("Stats Decay Rates")
 ## Points per second
@@ -43,14 +45,17 @@ var target_node: Node2D = null
 var is_active: bool = true
 var pet_custom_name: String = ""
 
-@onready var name_label: Label = $NameLabel
-@onready var hunger_bar: ProgressBar = $StatsUI/VBoxContainer/HungerBar
-@onready var health_bar: ProgressBar = $StatsUI/VBoxContainer/HealthBar
-@onready var happy_bar: ProgressBar = $StatsUI/VBoxContainer/HappyBar
-@onready var interact_prompt: Label = $InteractPrompt
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var name_label: Label = %NameLabel
+@onready var hunger_bar: ProgressBar = %HungerBar
+@onready var health_bar: ProgressBar = %HealthBar
+@onready var happy_bar: ProgressBar = %HappyBar
+@onready var interact_prompt: Label = %InteractPrompt
+@onready var sprite: Sprite2D = %Sprite2D
+@onready var anim_player: AnimationPlayer = %AnimationPlayer
 @onready var walk_player: AudioStreamPlayer2D = $WalkPlayer
 @onready var vocal_player: AudioStreamPlayer2D = $VocalPlayer
+
+var _last_direction: String = "down"
 
 var _vocal_timer: float = 0.0
 
@@ -62,8 +67,13 @@ func _ready():
 	name_label.text = pet_custom_name if pet_custom_name != "" else pet_type
 	interact_prompt.hide()
 	
+	if pet_texture != null:
+		sprite.texture = pet_texture
+	
+	sprite.scale = pet_sprite_scale
+	
 	if current_state == State.WILD:
-		$StatsUI.hide()
+		%StatsUI.hide()
 	
 	# Load memory if this is a returning wild pet
 	if pet_id != "" and GameManager.wild_pet_memory.has(pet_id):
@@ -117,10 +127,10 @@ func _physics_process(delta):
 	
 	if move_dir != Vector2.ZERO:
 		velocity = move_dir * move_speed
-		if move_dir.x != 0:
-			sprite.flip_h = move_dir.x < 0
 	else:
 		velocity = Vector2.ZERO
+		
+	_update_animation(move_dir)
 		
 	_update_sound_logic(delta)
 	move_and_slide()
@@ -198,6 +208,25 @@ func _update_ai_decisions(delta):
 		Behavior.MISCHIEVOUS:
 			if dist < 80: move_dir = -dir * 2.0; ai_timer = 0.5
 			elif ai_timer <= 0: move_dir = Vector2.ZERO
+
+func _update_animation(dir: Vector2):
+	var anim_name = "idle"
+	
+	if dir != Vector2.ZERO:
+		anim_name = "walk"
+		if abs(dir.x) > abs(dir.y):
+			_last_direction = "right" if dir.x > 0 else "left"
+		else:
+			_last_direction = "down" if dir.y > 0 else "up"
+	
+	var full_anim = anim_name + "_" + _last_direction
+	if anim_player.has_animation(full_anim):
+		if anim_player.current_animation != full_anim:
+			anim_player.play(full_anim)
+	else:
+		# Fallback if specific direction isn't found
+		if anim_player.has_animation(anim_name + "_down"):
+			anim_player.play(anim_name + "_down")
 
 # --- Actions ---
 

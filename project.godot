@@ -40,7 +40,7 @@ import/use_multiple_threads=false
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/tileset_collision_generator_free_version/plugin.cfg")
+enabled=PackedStringArray("res://addons/sprite_cutter/plugin.cfg")
 
 [file_customization]
 

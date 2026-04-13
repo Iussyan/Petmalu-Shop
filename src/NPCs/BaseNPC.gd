@@ -11,6 +11,8 @@ enum InteractionType { SHOP, DIALOGUE, QUEST }
 @export var move_speed: float = 80.0
 @export var wander_radius: float = 150.0
 @export var display_range: float = 200.0
+@export var npc_texture: Texture2D
+@export var npc_sprite_scale: Vector2 = Vector2.ONE
 
 @export_multiline var first_time_sequence: String = "" # Comma-separated: "Hello, How are you?"
 @export_multiline var random_dialogues: String = "" # Comma-separated: "Nice day!, Cold today."
@@ -31,11 +33,11 @@ var _patrol_waiting: bool = false
 var _patrol_wait_timer: float = 0.0
 var _is_showing_dialogue: bool = false
 
-@onready var sprite = $Sprite2D
-@onready var name_label = $NameLabel
-@onready var role_label = $RoleLabel
-@onready var interact_prompt = $InteractPrompt
-@onready var anim_player = $AnimationPlayer
+@onready var sprite = %Sprite2D
+@onready var name_label = %NameLabel
+@onready var role_label = %RoleLabel
+@onready var interact_prompt = %InteractPrompt
+@onready var anim_player = %AnimationPlayer
 
 var last_direction: String = "down"
 
@@ -47,6 +49,11 @@ func _ready():
 	name_label.text = npc_name
 	role_label.text = npc_role
 	interact_prompt.hide()
+	
+	if npc_texture != null:
+		sprite.texture = npc_texture
+	sprite.scale = npc_sprite_scale
+	
 	GameManager.dialogue_finished.connect(_on_dialogue_finished)
 	if is_passable:
 		set_collision_layer_value(3, false) # Disable bit 2 (Layer 3/NPCs)

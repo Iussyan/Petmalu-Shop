@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://pet1y203a4b5"]
 
 [ext_resource type="Script" uid="uid://bn6fb5bek0quh" path="res://src/Pets/BasePet.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://cw5cj01hcpd2b" path="res://icon.svg" id="2_texture"]
+[ext_resource type="Texture2D" uid="uid://bla8n0fib28oy" path="res://assets/Pets/pomeranian.png" id="2_kusbj"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_pet"]
 radius = 16.0
@@ -30,19 +30,184 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="Animation" id="Animation_rwoh2"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_idle_down"]
+resource_name = "idle_down"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_idle_left"]
+resource_name = "idle_left"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [4]
+}
+
+[sub_resource type="Animation" id="Animation_idle_right"]
+resource_name = "idle_right"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [7]
+}
+
+[sub_resource type="Animation" id="Animation_idle_up"]
+resource_name = "idle_up"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [10]
+}
+
+[sub_resource type="Animation" id="Animation_walk_down"]
+resource_name = "walk_down"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [2, 0]
+}
+
+[sub_resource type="Animation" id="Animation_walk_left"]
+resource_name = "walk_left"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [3, 5]
+}
+
+[sub_resource type="Animation" id="Animation_walk_right"]
+resource_name = "walk_right"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [6, 8]
+}
+
+[sub_resource type="Animation" id="Animation_walk_up"]
+resource_name = "walk_up"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [11, 9]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_bjgpx"]
+_data = {
+&"RESET": SubResource("Animation_rwoh2"),
+&"idle_down": SubResource("Animation_idle_down"),
+&"idle_left": SubResource("Animation_idle_left"),
+&"idle_right": SubResource("Animation_idle_right"),
+&"idle_up": SubResource("Animation_idle_up"),
+&"walk_down": SubResource("Animation_walk_down"),
+&"walk_left": SubResource("Animation_walk_left"),
+&"walk_right": SubResource("Animation_walk_right"),
+&"walk_up": SubResource("Animation_walk_up")
+}
+
 [node name="BasePet" type="CharacterBody2D" unique_id=2065790875]
 collision_layer = 4
 script = ExtResource("1_script")
+shop_behavior = 4
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=718911276]
+unique_name_in_owner = true
 modulate = Color(0.615686, 0.615686, 0.615686, 1)
-scale = Vector2(0.3, 0.3)
-texture = ExtResource("2_texture")
+position = Vector2(1.2744293, -8.006166)
+texture = ExtResource("2_kusbj")
+hframes = 3
+vframes = 4
+frame = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=850157714]
 shape = SubResource("CircleShape2D_pet")
 
 [node name="InteractionArea" type="Area2D" parent="." unique_id=609863433]
+unique_name_in_owner = true
 collision_layer = 0
 collision_mask = 2
 
@@ -50,15 +215,18 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_interact")
 
 [node name="NameLabel" type="Label" parent="." unique_id=1785855792]
+unique_name_in_owner = true
 offset_left = -40.0
 offset_top = -28.0
 offset_right = 40.0
 offset_bottom = -12.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 10
-text = "Pet Name"
+text = "!"
 horizontal_alignment = 1
 
 [node name="InteractPrompt" type="Label" parent="." unique_id=1037849749]
+unique_name_in_owner = true
 offset_left = -40.0
 offset_top = 22.0
 offset_right = 40.0
@@ -69,6 +237,7 @@ text = "[E] Interact"
 horizontal_alignment = 1
 
 [node name="StatsUI" type="Control" parent="." unique_id=5627179]
+unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 0
 offset_left = -20.0
@@ -86,30 +255,36 @@ grow_vertical = 2
 theme_override_constants/separation = 2
 
 [node name="HungerBar" type="ProgressBar" parent="StatsUI/VBoxContainer" unique_id=1558265305]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/fill = SubResource("StyleBoxFlat_hunger")
 value = 100.0
 show_percentage = false
 
 [node name="HealthBar" type="ProgressBar" parent="StatsUI/VBoxContainer" unique_id=1321675812]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/fill = SubResource("StyleBoxFlat_health")
 value = 100.0
 show_percentage = false
 
 [node name="HappyBar" type="ProgressBar" parent="StatsUI/VBoxContainer" unique_id=1007314496]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/fill = SubResource("StyleBoxFlat_happy")
 value = 50.0
 show_percentage = false
 
 [node name="WalkPlayer" type="AudioStreamPlayer2D" parent="." unique_id=123456789]
-bus = &"SFX"
 max_distance = 500.0
 
 [node name="VocalPlayer" type="AudioStreamPlayer2D" parent="." unique_id=987654321]
-bus = &"SFX"
 max_distance = 600.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1227462665]
+unique_name_in_owner = true
+libraries/ = SubResource("AnimationLibrary_bjgpx")
+playback_auto_capture_ease_type = 2
 
 [connection signal="body_entered" from="InteractionArea" to="." method="_on_interaction_area_body_entered"]
 [connection signal="body_exited" from="InteractionArea" to="." method="_on_interaction_area_body_exited"]

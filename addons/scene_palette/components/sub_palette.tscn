@@ -1,9 +1,9 @@
 [gd_scene load_steps=9 format=3 uid="uid://bvpntidioecs2"]
 
 [ext_resource type="Script" uid="uid://car65kfwh3rsf" path="res://addons/scene_palette/components/sub_palette.gd" id="1_refpc"]
-[ext_resource type="Texture2D" uid="uid://djkikw5bibcc4" path="res://addons/scene_palette/icons/arrow-side.png" id="2_k85x0"]
-[ext_resource type="Texture2D" uid="uid://u8n744wuh87v" path="res://addons/scene_palette/icons/arrow-down.png" id="3_vnqya"]
-[ext_resource type="Texture2D" uid="uid://dtr1mvnxsqbfu" path="res://addons/scene_palette/icons/file-folder.png" id="4_he5ce"]
+[ext_resource type="Texture2D" path="res://addons/scene_palette/icons/arrow-side.png" id="2_k85x0"]
+[ext_resource type="Texture2D" path="res://addons/scene_palette/icons/arrow-down.png" id="3_vnqya"]
+[ext_resource type="Texture2D" path="res://addons/scene_palette/icons/file-folder.png" id="4_he5ce"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_65kn4"]
 bg_color = Color(0.333333, 0.368627, 0.431373, 0.243137)

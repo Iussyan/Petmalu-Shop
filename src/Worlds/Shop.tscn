@@ -225,7 +225,7 @@ tile_set = ExtResource("2_dpj40")
 
 [node name="Pets" type="Node2D" parent="Interior/PetSanctuary" unique_id=653615487]
 unique_name_in_owner = true
-scale = Vector2(0.6, 0.6)
+scale = Vector2(0.5, 0.5)
 
 [node name="Doors" parent="Interior" unique_id=774265723 instance=ExtResource("2_nu2y6")]
 position = Vector2(-5.6, 106.4)
@@ -234,12 +234,13 @@ target_room = 2
 spawn_direction = 0
 prompt_text = "[E] Exit"
 
-[node name="Doors2" parent="Interior/Doors" unique_id=573862758 instance=ExtResource("2_nu2y6")]
+[node name="Doors2" parent="Interior/Doors" unique_id=616613307 instance=ExtResource("2_nu2y6")]
 position = Vector2(16, 0)
 scale = Vector2(-1, 1)
 target_room = 2
 spawn_direction = 0
 show_prompt = false
+prompt_text = "[E] Exit"
 
 [node name="Background" type="CanvasLayer" parent="Interior" unique_id=1391474081]
 layer = -1
