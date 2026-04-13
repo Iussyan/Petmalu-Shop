@@ -28,25 +28,23 @@
     *   Simple Rescues (Found lost pets)
 *   **Unlock**: Default Area
 
-### 2. Forest Area
+### 2. Desert Area
+*   **Description**: A sun-scorched wasteland with hidden creatures surviving the heat.
+*   **Pets**: Lizards, Sand Cats, Snakes, Desert Foxes
+*   **Mechanics**: Heat survival mechanics for both player and pets.
+*   **Unlock**: 5 Pets Rescued + Shop Level 2
+
+### 3. Forest Area
 *   **Description**: A lush, green woodland teeming with small life.
 *   **Pets**: Rabbits, Birds, Hamsters
 *   **Mechanics**: Tracking animals through bushes and trees.
-*   **Unlock**: 5 Pets Rescued + Shop Level 2
+*   **Unlock**: 10 Pets Rescued + Shop Level 3
 
-### 3. Beach Area
+### 4. Beach Area (The Endgame)
 *   **Description**: A sunny coastline with both shore and shallow water biomes.
 *   **Pets**: Fish, Crabs, Turtles, Injured Sea Animals
 *   **Mechanics**: Water-based rescue challenges.
-*   **Unlock**: 5 Pets Rescued + Shop Level 3
-
-### 4. Mountain Area (The Endgame)
-*   **Description**: High-altitude, rugged terrain with extreme conditions.
-*   **Pets**: Rare & Exotic Animals
-*   **Mechanics**: 
-    *   High-difficulty rescue puzzles
-    *   Dynamic Weather System
-*   **Unlock**: 5 Pets Rescued + Shop Level 4 + Rare Pet Discovered
+*   **Unlock**: 15 Pets Rescued + Shop Level 4
 
 ---
 

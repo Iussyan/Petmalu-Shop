@@ -11,11 +11,22 @@ script/source = "extends CanvasLayer
 
 func _ready():
 	_update_stats()
+	_check_visibility()
 	# Connect to GameManager signals
 	if GameManager.has_signal(\"stats_changed\"):
 		GameManager.stats_changed.connect(_on_stats_changed)
 	if GameManager.has_signal(\"inventory_changed\"):
 		GameManager.inventory_changed.connect(_on_inventory_changed)
+	
+	# Auto-hide on menu
+	get_tree().node_added.connect(func(_n): _check_visibility())
+
+func _check_visibility():
+	var scene = get_tree().current_scene
+	if scene and scene.name == \"MainMenu\":
+		visible = false
+	else:
+		visible = true
 
 func _on_stats_changed(_stat_name: String, _new_value):
 	_update_stats()

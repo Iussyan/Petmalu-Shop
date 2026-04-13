@@ -3,7 +3,7 @@
 This document provides a comprehensive overview of the current state of the **Petmalu Shop** project, a Godot 4.3+ game centered around rescuing pets and managing a shop. It serves as a persistent brain for the AI coding assistant.
 
 ## 🌟 Core Concept
-The player explores various biomes (Forest, Beach, Mountain) to rescue wild pets. Once rescued, pets are brought to the Shop, where the player must care for them (feed, play, treat) until they are healthy and happy enough for adoption. Adoption earns money and reputation, which unlocks new areas and shop levels.
+The player explores various biomes (Desert, Forest, Beach) to rescue wild pets. Once rescued, pets are brought to the Shop, where the player must care for them (feed, play, treat) until they are healthy and happy enough for adoption. Adoption earns money and reputation, which unlocks new areas and shop levels.
 
 ---
 
@@ -23,7 +23,7 @@ The central "brain" of the game.
     - `rescue_pet(pet_data, world_id)`: Appends pet data to the shop list and marks the world instance as rescued.
     - `change_scene(scene_path)`: Handles the fade-out, scene swap, and fade-in transition.
     - `_check_level_up()`: Calculates level based on reputation (1 level per 100 rep).
-    - `_check_unlocks()`: Checks if requirements for Forest/Beach/Mountain are met.
+    - `_check_unlocks()`: Checks if requirements for Desert/Forest/Beach are met.
     - `is_area_unlocked(area_name)`: Returns boolean based on level/pet requirements.
     - `open_dialogue(npc_name, role, text, owner_npc)`: Instantiates and displays the `DialoguePopup`.
     - `open_popup(scene_path, extra_data)`: Generic popup opener (Shop, Pet Info, etc.).

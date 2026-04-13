@@ -1,7 +1,8 @@
-[gd_scene format=3 uid="uid://ckylmr2tsxiq5"]
+[gd_scene format=4 uid="uid://ckylmr2tsxiq5"]
 
 [ext_resource type="PackedScene" uid="uid://c8j1k2m3n4p5" path="res://src/Player/Player.tscn" id="1_player"]
-[ext_resource type="Script" uid="uid://c3cmq160mfhdw" path="res://src/Components/Entrance.gd" id="2_entrance_script"]
+[ext_resource type="TileSet" uid="uid://b202foci4b4gx" path="res://Tilesets/Houses.tres" id="2_dpj40"]
+[ext_resource type="PackedScene" uid="uid://dh42umcm72bia" path="res://assets/Scenes/doors.tscn" id="2_nu2y6"]
 [ext_resource type="PackedScene" uid="uid://c6xk7b8wan3l" path="res://src/NPCs/BaseNPC.tscn" id="4_npc_scene"]
 
 [sub_resource type="GDScript" id="GDScript_shop"]
@@ -12,7 +13,11 @@ func _ready():
 	if GameManager.target_entrance_id != -1:
 		_position_player_at_entrance(GameManager.target_entrance_id)
 		GameManager.target_entrance_id = -1
-		
+
+	# BGM Setup
+	if has_node(\"/root/AudioManager\"):
+		AudioManager.play_bgm(\"res://assets/Audio/BGM/shop_theme.mp3\")
+
 	if has_node(\"/root/FadeOverlay\"):
 		get_node(\"/root/FadeOverlay\").fade_in()
 	
@@ -43,12 +48,17 @@ func _spawn_pet(data):
 	pet.happiness = data.happiness
 	
 	# Persistence Logic - Restore position if it exists
-	if data.has(\"position\"):
-		pet.global_position = data.position
+	if data.has(\"position\") and data.position != null:
+		var pos = data.position
+		if pos is String: pos = str_to_var(pos)
+		if pos != null:
+			pet.global_position = pos
+		else:
+			pet.position = Vector2(randf_range(-200, 200), randf_range(-100, 100))
 	else:
 		pet.position = Vector2(randf_range(-200, 200), randf_range(-100, 100))
 		
-	$PetSanctuary/Pets.add_child(pet)
+	%Pets.add_child(pet)
 
 func _notification(what):
 	if what == NOTIFICATION_EXIT_TREE:
@@ -56,7 +66,7 @@ func _notification(what):
 
 func _save_shop_pets():
 	var new_data = []
-	var pets_container = get_node_or_null(\"PetSanctuary/Pets\")
+	var pets_container = get_node_or_null(\"%Pets\")
 	if pets_container:
 		for pet in pets_container.get_children():
 			if pet.has_method(\"get_stats_data\"):
@@ -65,25 +75,10 @@ func _save_shop_pets():
 
 func _update_shop_evolution():
 	var lvl = GameManager.shop_level
-	if has_node(\"Nursery\"): $Nursery.visible = lvl >= 2
-	if has_node(\"Clinic\"): $Clinic.visible = lvl >= 3
-	if has_node(\"Garden\"): $Garden.visible = lvl >= 4
+	if has_node(\"%Nursery\"): %Nursery.visible = lvl >= 2
+	if has_node(\"%Clinic\"): %Clinic.visible = lvl >= 3
+	if has_node(\"%Garden\"): %Garden.visible = lvl >= 4
 "
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_h"]
-size = Vector2(1200, 50)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_v"]
-size = Vector2(50, 800)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
-size = Vector2(120, 60)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_room_h"]
-size = Vector2(500, 50)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_room_v"]
-size = Vector2(50, 500)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_room_h_large"]
 size = Vector2(800, 50)
@@ -91,209 +86,188 @@ size = Vector2(800, 50)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_room_v_large"]
 size = Vector2(50, 400)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_room_h"]
+size = Vector2(500, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_room_v"]
+size = Vector2(50, 500)
+
+[sub_resource type="Gradient" id="Gradient_vignette"]
+colors = PackedColorArray(0.101961, 0.0823529, 0.0705882, 0, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_vignette"]
+gradient = SubResource("Gradient_vignette")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
 [node name="Shop" type="Node2D" unique_id=1089006586]
 script = SubResource("GDScript_shop")
 
-[node name="Background" type="CanvasLayer" parent="." unique_id=1391474081]
-layer = -1
+[node name="Interior" type="Node2D" parent="." unique_id=1776013443]
+unique_name_in_owner = true
 
-[node name="Floor" type="ColorRect" parent="Background" unique_id=1918639551]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.321569, 0.223529, 0.141176, 1)
-metadata/_edit_use_anchors_ = true
-
-[node name="Walls" type="StaticBody2D" parent="." unique_id=1350057922]
-collision_mask = 0
-
-[node name="Collision_N" type="CollisionShape2D" parent="Walls" unique_id=1877281649]
-position = Vector2(0, -375)
-shape = SubResource("RectangleShape2D_wall_h")
-
-[node name="Collision_S" type="CollisionShape2D" parent="Walls" unique_id=1130656248]
-position = Vector2(0, 375)
-shape = SubResource("RectangleShape2D_wall_h")
-
-[node name="Collision_W" type="CollisionShape2D" parent="Walls" unique_id=540532676]
-position = Vector2(-575, 0)
-shape = SubResource("RectangleShape2D_wall_v")
-
-[node name="Collision_E" type="CollisionShape2D" parent="Walls" unique_id=1538441797]
-position = Vector2(575, 0)
-shape = SubResource("RectangleShape2D_wall_v")
-
-[node name="VisualWalls" type="Node2D" parent="Walls" unique_id=960688796]
-
-[node name="Wall_N" type="ColorRect" parent="Walls/VisualWalls" unique_id=1391820570]
-offset_left = -600.0
-offset_top = -400.0
-offset_right = 600.0
-offset_bottom = -350.0
-color = Color(0.192157, 0.133333, 0.0823529, 1)
-
-[node name="Wall_S" type="ColorRect" parent="Walls/VisualWalls" unique_id=1943379721]
-offset_left = -600.0
-offset_top = 350.0
-offset_right = 600.0
-offset_bottom = 400.0
-color = Color(0.192157, 0.133333, 0.0823529, 1)
-
-[node name="Wall_W" type="ColorRect" parent="Walls/VisualWalls" unique_id=268894271]
-offset_left = -600.0
-offset_top = -400.0
-offset_right = -550.0
-offset_bottom = 400.0
-color = Color(0.192157, 0.133333, 0.0823529, 1)
-
-[node name="Wall_E" type="ColorRect" parent="Walls/VisualWalls" unique_id=668915820]
-offset_left = 550.0
-offset_top = -400.0
-offset_right = 600.0
-offset_bottom = 400.0
-color = Color(0.192157, 0.133333, 0.0823529, 1)
-
-[node name="PetSanctuary" type="Node2D" parent="." unique_id=122890465]
-
-[node name="Pen" type="ColorRect" parent="PetSanctuary" unique_id=1207984044]
-offset_left = -400.0
-offset_top = -200.0
-offset_right = 400.0
-offset_bottom = 200.0
-color = Color(0.439216, 0.313726, 0.207843, 1)
-
-[node name="Label" type="Label" parent="PetSanctuary/Pen" unique_id=894419636]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = 110.0
-offset_bottom = 36.0
-text = "SAFE HAVEN"
-
-[node name="Pets" type="Node2D" parent="PetSanctuary" unique_id=653615487]
-
-[node name="Shopkeeper" parent="." unique_id=623674348 instance=ExtResource("4_npc_scene")]
-position = Vector2(422, -281)
-npc_name = "Walter"
-npc_role = "Sanctuary Manager"
-
-[node name="ExitDoor" type="Area2D" parent="." unique_id=512675354 groups=["entrances"]]
-position = Vector2(0, 360)
-collision_layer = 0
-collision_mask = 2
-script = ExtResource("2_entrance_script")
-target_scene = "res://src/Worlds/Main.tscn"
-spawn_offset = Vector2(0, -60)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor" unique_id=1983928511]
-shape = SubResource("RectangleShape2D_door")
-
-[node name="Label" type="Label" parent="ExitDoor" unique_id=1473824509]
-offset_left = -50.0
-offset_top = -40.0
-offset_right = 50.0
-offset_bottom = -14.0
-text = "EXIT TO TOWN"
-horizontal_alignment = 1
-
-[node name="Player" parent="." unique_id=243418967 instance=ExtResource("1_player")]
-
-[node name="Nursery" type="Node2D" parent="." unique_id=425031711]
+[node name="Garden" type="Node2D" parent="Interior" unique_id=1983176988]
+unique_name_in_owner = true
 visible = false
 
-[node name="Floor" type="ColorRect" parent="Nursery" unique_id=1105482]
-offset_left = 600.0
-offset_top = -400.0
-offset_right = 1100.0
-offset_bottom = 100.0
-color = Color(0.188235, 0.407843, 0.501961, 1)
-
-[node name="Label" type="Label" parent="Nursery" unique_id=2016782103]
-offset_left = 620.0
-offset_top = -380.0
-offset_right = 720.0
-offset_bottom = -354.0
-text = "NURSERY (Level 3)"
-
-[node name="Walls" type="StaticBody2D" parent="Nursery" unique_id=1395037936]
-collision_mask = 0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Nursery/Walls" unique_id=858614442]
-position = Vector2(850, -425)
-shape = SubResource("RectangleShape2D_room_h")
-
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="Nursery/Walls" unique_id=1616267983]
-position = Vector2(850, 125)
-shape = SubResource("RectangleShape2D_room_h")
-
-[node name="CollisionShape2D3" type="CollisionShape2D" parent="Nursery/Walls" unique_id=1725292833]
-position = Vector2(1125, -150)
-shape = SubResource("RectangleShape2D_room_v")
-
-[node name="Clinic" type="Node2D" parent="." unique_id=1129282070]
-visible = false
-
-[node name="Floor" type="ColorRect" parent="Clinic" unique_id=1957973469]
-offset_left = -1100.0
-offset_top = -400.0
-offset_right = -600.0
-offset_bottom = 100.0
-color = Color(0.407843, 0.647059, 0.607843, 1)
-
-[node name="Label" type="Label" parent="Clinic" unique_id=1155921236]
-offset_left = -1080.0
-offset_top = -380.0
-offset_right = -940.0
-offset_bottom = -354.0
-text = "CLINIC (Level 5)"
-
-[node name="Walls" type="StaticBody2D" parent="Clinic" unique_id=2031925310]
-collision_mask = 0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Clinic/Walls" unique_id=789827440]
-position = Vector2(-850, -425)
-shape = SubResource("RectangleShape2D_room_h")
-
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="Clinic/Walls" unique_id=2069790570]
-position = Vector2(-850, 125)
-shape = SubResource("RectangleShape2D_room_h")
-
-[node name="CollisionShape2D3" type="CollisionShape2D" parent="Clinic/Walls" unique_id=941198764]
-position = Vector2(-1125, -150)
-shape = SubResource("RectangleShape2D_room_v")
-
-[node name="Garden" type="Node2D" parent="." unique_id=1983176988]
-visible = false
-
-[node name="Floor" type="ColorRect" parent="Garden" unique_id=193356721]
+[node name="Floor" type="ColorRect" parent="Interior/Garden" unique_id=193356721]
 offset_left = -400.0
 offset_top = -800.0
 offset_right = 400.0
 offset_bottom = -400.0
 color = Color(0.133333, 0.364706, 0.14902, 1)
 
-[node name="Label" type="Label" parent="Garden" unique_id=401976436]
+[node name="Label" type="Label" parent="Interior/Garden" unique_id=401976436]
 offset_left = -380.0
 offset_top = -780.0
 offset_right = -240.0
 offset_bottom = -754.0
 text = "GARDEN (Level 8)"
 
-[node name="Walls" type="StaticBody2D" parent="Garden" unique_id=30479639]
+[node name="Walls" type="StaticBody2D" parent="Interior/Garden" unique_id=30479639]
 collision_mask = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Garden/Walls" unique_id=1947200915]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interior/Garden/Walls" unique_id=1947200915]
 position = Vector2(0, -825)
 shape = SubResource("RectangleShape2D_room_h_large")
 
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="Garden/Walls" unique_id=1660953136]
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Interior/Garden/Walls" unique_id=1660953136]
 position = Vector2(-425, -600)
 shape = SubResource("RectangleShape2D_room_v_large")
 
-[node name="CollisionShape2D3" type="CollisionShape2D" parent="Garden/Walls" unique_id=364243514]
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Interior/Garden/Walls" unique_id=364243514]
 position = Vector2(425, -600)
 shape = SubResource("RectangleShape2D_room_v_large")
 
-[connection signal="body_entered" from="ExitDoor" to="ExitDoor" method="_on_body_entered"]
+[node name="Clinic" type="Node2D" parent="Interior" unique_id=1129282070]
+unique_name_in_owner = true
+visible = false
+
+[node name="Floor" type="ColorRect" parent="Interior/Clinic" unique_id=1957973469]
+offset_left = -1100.0
+offset_top = -400.0
+offset_right = -600.0
+offset_bottom = 100.0
+color = Color(0.407843, 0.647059, 0.607843, 1)
+
+[node name="Label" type="Label" parent="Interior/Clinic" unique_id=1155921236]
+offset_left = -1080.0
+offset_top = -380.0
+offset_right = -940.0
+offset_bottom = -354.0
+text = "CLINIC (Level 5)"
+
+[node name="Walls" type="StaticBody2D" parent="Interior/Clinic" unique_id=2031925310]
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interior/Clinic/Walls" unique_id=789827440]
+position = Vector2(-850, -425)
+shape = SubResource("RectangleShape2D_room_h")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Interior/Clinic/Walls" unique_id=2069790570]
+position = Vector2(-850, 125)
+shape = SubResource("RectangleShape2D_room_h")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Interior/Clinic/Walls" unique_id=941198764]
+position = Vector2(-1125, -150)
+shape = SubResource("RectangleShape2D_room_v")
+
+[node name="Nursery" type="Node2D" parent="Interior" unique_id=425031711]
+unique_name_in_owner = true
+visible = false
+
+[node name="Floor" type="ColorRect" parent="Interior/Nursery" unique_id=1105482]
+offset_left = 600.0
+offset_top = -400.0
+offset_right = 1100.0
+offset_bottom = 100.0
+color = Color(0.188235, 0.407843, 0.501961, 1)
+
+[node name="Label" type="Label" parent="Interior/Nursery" unique_id=2016782103]
+offset_left = 620.0
+offset_top = -380.0
+offset_right = 720.0
+offset_bottom = -354.0
+text = "NURSERY (Level 3)"
+
+[node name="Walls" type="StaticBody2D" parent="Interior/Nursery" unique_id=1395037936]
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interior/Nursery/Walls" unique_id=858614442]
+position = Vector2(850, -425)
+shape = SubResource("RectangleShape2D_room_h")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Interior/Nursery/Walls" unique_id=1616267983]
+position = Vector2(850, 125)
+shape = SubResource("RectangleShape2D_room_h")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Interior/Nursery/Walls" unique_id=1725292833]
+position = Vector2(1125, -150)
+shape = SubResource("RectangleShape2D_room_v")
+
+[node name="PetSanctuary" type="Node2D" parent="Interior" unique_id=122890465]
+scale = Vector2(0.7, 0.7)
+
+[node name="Floor" type="TileMapLayer" parent="Interior/PetSanctuary" unique_id=628088242]
+tile_map_data = PackedByteArray("AAD1/wgACQAfAAYAAAD2/wgACQAfAAYAAAD3/wgACQAfAAYAAAD4/wgACQAfAAYAAAD5/wgACQAfAAYAAAD6/wgACQAfAAYAAAD7/wgACQAfAAYAAAD8/wgACQAfAAYAAAD9/wgACQAfAAYAAAD+/wgACQAfAAYAAAD//wgACQAfAAYAAAAAAAgACQAfAAYAAAABAAgACQAfAAYAAAACAAgACQAfAAYAAAADAAgACQAfAAYAAAAEAAgACQAfAAYAAAAFAAgACQAfAAYAAAAGAAgACQAfAAYAAAAHAAgACQAfAAYAAAAIAAgACQAfAAYAAAAJAAgACQAfAAYAAAAKAAgACQAfAAYAAAAAAAkACQAfAAYAAAD//wkACQAfAAYAAAA=")
+tile_set = ExtResource("2_dpj40")
+
+[node name="Walls" type="TileMapLayer" parent="Interior/PetSanctuary" unique_id=787711355]
+scale = Vector2(0.9999998, 0.9999998)
+tile_map_data = PackedByteArray("AAD0//j/CQASAAYAAAD0//n/CQASAAgAAAD0//r/CQASAAgAAAD0//v/CQASAAgAAAD0//z/CQASAAgAAAD0//3/CQASAAgAAAD0//7/CQASAAgAAAD0////CQASAAgAAAD0/wAACQASAAgAAAD0/wEACQASAAgAAAD0/wIACQASAAgAAAD0/wMACQASAAgAAAD0/wQACQASAAgAAAD0/wUACQASAAgAAAD0/wYACQASAAgAAAD0/wcACQASAAgAAAD0/wgACQASAAkAAAD0/wkACQASAAoAAAD1//j/CQATAAkAAAD1//n/CQAfAAYAAAD1//r/CQAfAAYAAAD1//v/CQAfAAYAAAD1//z/CQAfAAYAAAD1//3/CQAfAAYAAAD1//7/CQAfAAYAAAD1////CQAfAAYAAAD1/wAACQAfAAYAAAD1/wEACQAfAAYAAAD1/wIACQAfAAYAAAD1/wMACQAfAAYAAAD1/wQACQAfAAYAAAD1/wUACQAfAAYAAAD1/wYACQAfAAYAAAD1/wcACQAfAAYAAAD1/wgACQATAAkAAAD1/wkACQATAAoAAAD2//j/CQATAAYAAAD2//n/CQAfAAYAAAD2//r/CQAfAAYAAAD2//v/CQAfAAYAAAD2//z/CQAfAAYAAAD2//3/CQAfAAYAAAD2//7/CQAfAAYAAAD2////CQAfAAYAAAD2/wAACQAfAAYAAAD2/wEACQAfAAYAAAD2/wIACQAfAAYAAAD2/wMACQAfAAYAAAD2/wQACQAfAAYAAAD2/wUACQAfAAYAAAD2/wYACQAfAAYAAAD2/wcACQAfAAYAAAD2/wgACQATAAkAAAD2/wkACQATAAoAAAD3//j/CQATAAkAAAD3//n/CQAfAAYAAAD3//r/CQAfAAYAAAD3//v/CQAfAAYAAAD3//z/CQAfAAYAAAD3//3/CQAfAAYAAAD3//7/CQAfAAYAAAD3////CQAfAAYAAAD3/wAACQAfAAYAAAD3/wEACQAfAAYAAAD3/wIACQAfAAYAAAD3/wMACQAfAAYAAAD3/wQACQAfAAYAAAD3/wUACQAfAAYAAAD3/wYACQAfAAYAAAD3/wcACQAfAAYAAAD3/wgACQATAAkAAAD3/wkACQATAAoAAAD4//j/CQATAAYAAAD4//n/CQAfAAYAAAD4//r/CQAfAAYAAAD4//v/CQAfAAYAAAD4//z/CQAfAAYAAAD4//3/CQAfAAYAAAD4//7/CQAfAAYAAAD4////CQAfAAYAAAD4/wAACQAfAAYAAAD4/wEACQAfAAYAAAD4/wIACQAfAAYAAAD4/wMACQAfAAYAAAD4/wQACQAfAAYAAAD4/wUACQAfAAYAAAD4/wYACQAfAAYAAAD4/wcACQAfAAYAAAD4/wgACQATAAkAAAD4/wkACQATAAoAAAD5//j/CQATAAYAAAD5//n/CQAfAAYAAAD5//r/CQAfAAYAAAD5//v/CQAfAAYAAAD5//z/CQAfAAYAAAD5//3/CQAfAAYAAAD5//7/CQAfAAYAAAD5////CQAfAAYAAAD5/wAACQAfAAYAAAD5/wEACQAfAAYAAAD5/wIACQAfAAYAAAD5/wMACQAfAAYAAAD5/wQACQAfAAYAAAD5/wUACQAfAAYAAAD5/wYACQAfAAYAAAD5/wcACQAfAAYAAAD5/wgACQATAAkAAAD5/wkACQATAAoAAAD6//j/CQATAAkAAAD6//n/CQAfAAYAAAD6//r/CQAfAAYAAAD6//v/CQAfAAYAAAD6//z/CQAfAAYAAAD6//3/CQAfAAYAAAD6//7/CQAfAAYAAAD6////CQAfAAYAAAD6/wAACQAfAAYAAAD6/wEACQAfAAYAAAD6/wIACQAfAAYAAAD6/wMACQAfAAYAAAD6/wQACQAfAAYAAAD6/wUACQAfAAYAAAD6/wYACQAfAAYAAAD6/wcACQAfAAYAAAD6/wgACQATAAkAAAD6/wkACQATAAoAAAD7//j/CQATAAYAAAD7//n/CQAfAAYAAAD7//r/CQAfAAYAAAD7//v/CQAfAAYAAAD7//z/CQAfAAYAAAD7//3/CQAfAAYAAAD7//7/CQAfAAYAAAD7////CQAfAAYAAAD7/wAACQAfAAYAAAD7/wEACQAfAAYAAAD7/wIACQAfAAYAAAD7/wMACQAfAAYAAAD7/wQACQAfAAYAAAD7/wUACQAfAAYAAAD7/wYACQAfAAYAAAD7/wcACQAfAAYAAAD7/wgACQATAAkAAAD7/wkACQATAAoAAAD8//j/CQATAAkAAAD8//n/CQAfAAYAAAD8//r/CQAfAAYAAAD8//v/CQAfAAYAAAD8//z/CQAfAAYAAAD8//3/CQAfAAYAAAD8//7/CQAfAAYAAAD8////CQAfAAYAAAD8/wAACQAfAAYAAAD8/wEACQAfAAYAAAD8/wIACQAfAAYAAAD8/wMACQAfAAYAAAD8/wQACQAfAAYAAAD8/wUACQAfAAYAAAD8/wYACQAfAAYAAAD8/wcACQAfAAYAAAD8/wgACQATAAkAAAD8/wkACQATAAoAAAD9//j/CQATAAYAAAD9//n/CQAfAAYAAAD9//r/CQAfAAYAAAD9//v/CQAfAAYAAAD9//z/CQAfAAYAAAD9//3/CQAfAAYAAAD9//7/CQAfAAYAAAD9////CQAfAAYAAAD9/wAACQAfAAYAAAD9/wEACQAfAAYAAAD9/wIACQAfAAYAAAD9/wMACQAfAAYAAAD9/wQACQAfAAYAAAD9/wUACQAfAAYAAAD9/wYACQAfAAYAAAD9/wcACQAfAAYAAAD9/wgACQATAAkAAAD9/wkACQATAAoAAAD+//j/CQATAAkAAAD+//n/CQAfAAYAAAD+//r/CQAfAAYAAAD+//v/CQAfAAYAAAD+//z/CQAfAAYAAAD+//3/CQAfAAYAAAD+//7/CQAfAAYAAAD+////CQAfAAYAAAD+/wAACQAfAAYAAAD+/wEACQAfAAYAAAD+/wIACQAfAAYAAAD+/wMACQAfAAYAAAD+/wQACQAfAAYAAAD+/wUACQAfAAYAAAD+/wYACQAfAAYAAAD+/wcACQAfAAYAAAD+/wgACQATAAkAAAD+/wkACQATAAoAAAD///j/CQATAAkAAAD///n/CQAfAAYAAAD///r/CQAfAAYAAAD///v/CQAfAAYAAAD///z/CQAfAAYAAAD///3/CQAfAAYAAAD///7/CQAfAAYAAAD/////CQAfAAYAAAD//wAACQAfAAYAAAD//wEACQAfAAYAAAD//wIACQAfAAYAAAD//wMACQAfAAYAAAD//wQACQAfAAYAAAD//wUACQAfAAYAAAD//wYACQAfAAYAAAD//wcACQAfAAYAAAAAAPj/CQATAAkAAAAAAPn/CQAfAAYAAAAAAPr/CQAfAAYAAAAAAPv/CQAfAAYAAAAAAPz/CQAfAAYAAAAAAP3/CQAfAAYAAAAAAP7/CQAfAAYAAAAAAP//CQAfAAYAAAAAAAAACQAfAAYAAAAAAAEACQAfAAYAAAAAAAIACQAfAAYAAAAAAAMACQAfAAYAAAAAAAQACQAfAAYAAAAAAAUACQAfAAYAAAAAAAYACQAfAAYAAAAAAAcACQAfAAYAAAABAPj/CQATAAkAAAABAPn/CQAfAAYAAAABAPr/CQAfAAYAAAABAPv/CQAfAAYAAAABAPz/CQAfAAYAAAABAP3/CQAfAAYAAAABAP7/CQAfAAYAAAABAP//CQAfAAYAAAABAAAACQAfAAYAAAABAAEACQAfAAYAAAABAAIACQAfAAYAAAABAAMACQAfAAYAAAABAAQACQAfAAYAAAABAAUACQAfAAYAAAABAAYACQAfAAYAAAABAAcACQAfAAYAAAABAAgACQATAAkAAAABAAkACQATAAoAAAACAPj/CQATAAYAAAACAPn/CQAfAAYAAAACAPr/CQAfAAYAAAACAPv/CQAfAAYAAAACAPz/CQAfAAYAAAACAP3/CQAfAAYAAAACAP7/CQAfAAYAAAACAP//CQAfAAYAAAACAAAACQAfAAYAAAACAAEACQAfAAYAAAACAAIACQAfAAYAAAACAAMACQAfAAYAAAACAAQACQAfAAYAAAACAAUACQAfAAYAAAACAAYACQAfAAYAAAACAAcACQAfAAYAAAACAAgACQATAAkAAAACAAkACQATAAoAAAADAPj/CQATAAkAAAADAPn/CQAfAAYAAAADAPr/CQAfAAYAAAADAPv/CQAfAAYAAAADAPz/CQAfAAYAAAADAP3/CQAfAAYAAAADAP7/CQAfAAYAAAADAP//CQAfAAYAAAADAAAACQAfAAYAAAADAAEACQAfAAYAAAADAAIACQAfAAYAAAADAAMACQAfAAYAAAADAAQACQAfAAYAAAADAAUACQAfAAYAAAADAAYACQAfAAYAAAADAAcACQAfAAYAAAADAAgACQATAAkAAAADAAkACQATAAoAAAAEAPj/CQATAAYAAAAEAPn/CQAfAAYAAAAEAPr/CQAfAAYAAAAEAPv/CQAfAAYAAAAEAPz/CQAfAAYAAAAEAP3/CQAfAAYAAAAEAP7/CQAfAAYAAAAEAP//CQAfAAYAAAAEAAAACQAfAAYAAAAEAAEACQAfAAYAAAAEAAIACQAfAAYAAAAEAAMACQAfAAYAAAAEAAQACQAfAAYAAAAEAAUACQAfAAYAAAAEAAYACQAfAAYAAAAEAAcACQAfAAYAAAAEAAgACQATAAkAAAAEAAkACQATAAoAAAAFAPj/CQATAAkAAAAFAPn/CQAfAAYAAAAFAPr/CQAfAAYAAAAFAPv/CQAfAAYAAAAFAPz/CQAfAAYAAAAFAP3/CQAfAAYAAAAFAP7/CQAfAAYAAAAFAP//CQAfAAYAAAAFAAAACQAfAAYAAAAFAAEACQAfAAYAAAAFAAIACQAfAAYAAAAFAAMACQAfAAYAAAAFAAQACQAfAAYAAAAFAAUACQAfAAYAAAAFAAYACQAfAAYAAAAFAAcACQAfAAYAAAAFAAgACQATAAkAAAAFAAkACQATAAoAAAAGAPj/CQATAAkAAAAGAPn/CQAfAAYAAAAGAPr/CQAfAAYAAAAGAPv/CQAfAAYAAAAGAPz/CQAfAAYAAAAGAP3/CQAfAAYAAAAGAP7/CQAfAAYAAAAGAP//CQAfAAYAAAAGAAAACQAfAAYAAAAGAAEACQAfAAYAAAAGAAIACQAfAAYAAAAGAAMACQAfAAYAAAAGAAQACQAfAAYAAAAGAAUACQAfAAYAAAAGAAYACQAfAAYAAAAGAAcACQAfAAYAAAAGAAgACQATAAkAAAAGAAkACQATAAoAAAAHAPj/CQATAAkAAAAHAPn/CQAfAAYAAAAHAPr/CQAfAAYAAAAHAPv/CQAfAAYAAAAHAPz/CQAfAAYAAAAHAP3/CQAfAAYAAAAHAP7/CQAfAAYAAAAHAP//CQAfAAYAAAAHAAAACQAfAAYAAAAHAAEACQAfAAYAAAAHAAIACQAfAAYAAAAHAAMACQAfAAYAAAAHAAQACQAfAAYAAAAHAAUACQAfAAYAAAAHAAYACQAfAAYAAAAHAAcACQAfAAYAAAAHAAgACQATAAkAAAAHAAkACQATAAoAAAAIAPj/CQATAAkAAAAIAPn/CQAfAAYAAAAIAPr/CQAfAAYAAAAIAPv/CQAfAAYAAAAIAPz/CQAfAAYAAAAIAP3/CQAfAAYAAAAIAP7/CQAfAAYAAAAIAP//CQAfAAYAAAAIAAAACQAfAAYAAAAIAAEACQAfAAYAAAAIAAIACQAfAAYAAAAIAAMACQAfAAYAAAAIAAQACQAfAAYAAAAIAAUACQAfAAYAAAAIAAYACQAfAAYAAAAIAAcACQAfAAYAAAAIAAgACQATAAkAAAAIAAkACQATAAoAAAAJAPj/CQATAAYAAAAJAPn/CQAfAAYAAAAJAPr/CQAfAAYAAAAJAPv/CQAfAAYAAAAJAPz/CQAfAAYAAAAJAP3/CQAfAAYAAAAJAP7/CQAfAAYAAAAJAP//CQAfAAYAAAAJAAAACQAfAAYAAAAJAAEACQAfAAYAAAAJAAIACQAfAAYAAAAJAAMACQAfAAYAAAAJAAQACQAfAAYAAAAJAAUACQAfAAYAAAAJAAYACQAfAAYAAAAJAAcACQAfAAYAAAAJAAgACQATAAkAAAAJAAkACQATAAoAAAAKAPj/CQATAAkAAAAKAPn/CQAfAAYAAAAKAPr/CQAfAAYAAAAKAPv/CQAfAAYAAAAKAPz/CQAfAAYAAAAKAP3/CQAfAAYAAAAKAP7/CQAfAAYAAAAKAP//CQAfAAYAAAAKAAAACQAfAAYAAAAKAAEACQAfAAYAAAAKAAIACQAfAAYAAAAKAAMACQAfAAYAAAAKAAQACQAfAAYAAAAKAAUACQAfAAYAAAAKAAYACQAfAAYAAAAKAAcACQAfAAYAAAAKAAgACQATAAkAAAAKAAkACQATAAoAAAALAPj/CQAUAAYAAAALAPn/CQAUAAgAAAALAPr/CQAUAAgAAAALAPv/CQAUAAgAAAALAPz/CQAUAAgAAAALAP3/CQAUAAgAAAALAP7/CQAUAAgAAAALAP//CQAUAAgAAAALAAAACQAUAAgAAAALAAEACQAUAAgAAAALAAIACQAUAAgAAAALAAMACQAUAAgAAAALAAQACQAUAAgAAAALAAUACQAUAAgAAAALAAYACQAUAAgAAAALAAcACQAUAAgAAAALAAgACQAUAAkAAAALAAkACQAUAAoAAAA=")
+tile_set = ExtResource("2_dpj40")
+
+[node name="Furnitures" type="TileMapLayer" parent="Interior/PetSanctuary" unique_id=923451136]
+tile_set = ExtResource("2_dpj40")
+
+[node name="Pets" type="Node2D" parent="Interior/PetSanctuary" unique_id=653615487]
+unique_name_in_owner = true
+scale = Vector2(0.6, 0.6)
+
+[node name="Doors" parent="Interior" unique_id=774265723 instance=ExtResource("2_nu2y6")]
+position = Vector2(-5.6, 106.4)
+scale = Vector2(0.7, 0.7)
+target_room = 2
+spawn_direction = 0
+prompt_text = "[E] Exit"
+
+[node name="Doors2" parent="Interior/Doors" unique_id=573862758 instance=ExtResource("2_nu2y6")]
+position = Vector2(16, 0)
+scale = Vector2(-1, 1)
+target_room = 2
+spawn_direction = 0
+show_prompt = false
+
+[node name="Background" type="CanvasLayer" parent="Interior" unique_id=1391474081]
+layer = -1
+
+[node name="ColorRect" type="ColorRect" parent="Interior/Background" unique_id=298100469]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.101961, 0.0823529, 0.0705882, 1)
+
+[node name="Vignette" type="TextureRect" parent="Interior/Background" unique_id=48291048]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 7.0
+offset_bottom = 7.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_vignette")
+
+[node name="Shopkeeper" parent="." unique_id=623674348 instance=ExtResource("4_npc_scene")]
+position = Vector2(83.7327, -51.066864)
+scale = Vector2(0.6, 0.6)
+npc_name = "Walter"
+npc_role = "Shop"
+behavior = 2
+
+[node name="Player" parent="." unique_id=243418967 instance=ExtResource("1_player")]
+position = Vector2(-48.5437, 32.12622)

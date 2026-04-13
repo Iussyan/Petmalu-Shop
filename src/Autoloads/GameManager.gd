@@ -7,9 +7,9 @@ var shop_level: int = 1
 var pets_rescued: int = 0
 
 # Biome Unlock Requirements
-const FOREST_UNLOCK = {"level": 2, "pets": 5}
-const BEACH_UNLOCK = {"level": 3, "pets": 5}
-const MOUNTAIN_UNLOCK = {"level": 4, "pets": 5}
+const DESERT_UNLOCK = {"level": 2, "pets": 5}
+const FOREST_UNLOCK = {"level": 3, "pets": 10}
+const BEACH_UNLOCK = {"level": 4, "pets": 15}
 
 var rescued_pets_data: Array = []
 var rescued_wild_pet_ids: Array[String] = []
@@ -21,18 +21,30 @@ var player_facing_on_spawn: String = "down"
 var active_popup: CanvasLayer = null # Track the currently open UI
 var met_npc_names: Array[String] = [] # Track which NPCs have been met
 
+# Dialogue Settings
+var dialogue_typing_speed: float = 40.0 # Characters per second
+
 signal stats_changed(stat_name, new_value)
 signal inventory_changed(item, amount)
 signal area_unlocked(area_name)
 signal dialogue_finished(npc_owner)
 
+func _ready():
+	# Load progress on startup
+	if has_node("/root/SaveManager"):
+		get_node("/root/SaveManager").load_game()
+
 func add_money(amount: int):
 	money += amount
 	stats_changed.emit("money", money)
+	if has_node("/root/SaveManager"):
+		get_node("/root/SaveManager").save_game()
 
 func add_inventory(item: String, amount: int):
-	inventory[item] = inventory.get(item, 0) + amount
+	inventory[item] = int(inventory.get(item, 0)) + amount
 	inventory_changed.emit(item, inventory[item])
+	if has_node("/root/SaveManager"):
+		get_node("/root/SaveManager").save_game()
 
 func buy_item(item: String, amount: int, cost: int) -> bool:
 	if money >= cost:
@@ -56,6 +68,9 @@ func rescue_pet(pet_data: Dictionary = {}, world_id: String = ""):
 	pets_rescued += 1
 	stats_changed.emit("pets_rescued", pets_rescued)
 	_check_unlocks()
+	
+	if has_node("/root/SaveManager"):
+		get_node("/root/SaveManager").save_game()
 
 func change_scene(scene_path: String):
 	close_popup() # Clean UI on transition
@@ -75,18 +90,18 @@ func _check_level_up():
 		_check_unlocks()
 
 func _check_unlocks():
+	if is_area_unlocked("Desert"):
+		area_unlocked.emit("Desert")
 	if is_area_unlocked("Forest"):
 		area_unlocked.emit("Forest")
 	if is_area_unlocked("Beach"):
 		area_unlocked.emit("Beach")
-	if is_area_unlocked("Mountain"):
-		area_unlocked.emit("Mountain")
 
 func is_area_unlocked(area_name: String) -> bool:
 	match area_name:
+		"Desert": return shop_level >= DESERT_UNLOCK.level and pets_rescued >= DESERT_UNLOCK.pets
 		"Forest": return shop_level >= FOREST_UNLOCK.level and pets_rescued >= FOREST_UNLOCK.pets
 		"Beach": return shop_level >= BEACH_UNLOCK.level and pets_rescued >= BEACH_UNLOCK.pets
-		"Mountain": return shop_level >= MOUNTAIN_UNLOCK.level and pets_rescued >= MOUNTAIN_UNLOCK.pets
 		"Town": return true
 	return false
 
@@ -142,3 +157,20 @@ func close_popup():
 			dialogue_finished.emit(owner_npc)
 	else:
 		active_popup = null
+
+func reset_game_state():
+	money = 100
+	reputation = 0
+	shop_level = 1
+	pets_rescued = 0
+	rescued_pets_data = []
+	rescued_wild_pet_ids = []
+	wild_pet_memory = {}
+	inventory = {"food": 10}
+	met_npc_names = []
+	
+	# Emit signals to update potential UI listeners
+	stats_changed.emit("money", money)
+	stats_changed.emit("reputation", reputation)
+	stats_changed.emit("shop_level", shop_level)
+	stats_changed.emit("pets_rescued", pets_rescued)

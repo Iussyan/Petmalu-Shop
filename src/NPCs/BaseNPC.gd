@@ -35,6 +35,9 @@ var _is_showing_dialogue: bool = false
 @onready var name_label = $NameLabel
 @onready var role_label = $RoleLabel
 @onready var interact_prompt = $InteractPrompt
+@onready var anim_player = $AnimationPlayer
+
+var last_direction: String = "down"
 
 func _ready():
 	start_pos = global_position
@@ -79,12 +82,23 @@ func _physics_process(delta):
 
 	if move_dir != Vector2.ZERO:
 		velocity = move_dir * move_speed
-		if move_dir.x != 0:
-			sprite.flip_h = move_dir.x < 0
 	else:
 		velocity = Vector2.ZERO
 
+	_update_animations()
 	move_and_slide()
+
+func _update_animations():
+	if velocity.length() > 0.1:
+		# Determine primary direction
+		if abs(velocity.x) > abs(velocity.y):
+			last_direction = "left" if velocity.x < 0 else "right"
+		else:
+			last_direction = "up" if velocity.y < 0 else "down"
+		
+		anim_player.play("walk_" + last_direction)
+	else:
+		anim_player.play("idle_" + last_direction)
 
 
 # ─── AI ──────────────────────────────────────────────────────────────────────
@@ -111,7 +125,10 @@ func _update_ai(delta):
 			move_dir = Vector2.ZERO
 			if is_instance_valid(target_node):
 				var dir = global_position.direction_to(target_node.global_position)
-				sprite.flip_h = dir.x < 0
+				if abs(dir.x) > abs(dir.y):
+					last_direction = "left" if dir.x < 0 else "right"
+				else:
+					last_direction = "up" if dir.y < 0 else "down"
 
 		Behavior.PATROL:
 			_update_patrol(delta)

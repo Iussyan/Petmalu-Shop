@@ -8,6 +8,9 @@ script/source = "extends CanvasLayer
 @onready var content_lbl = $Panel/VBox/Content
 
 var npc_owner: Node = null
+var _typing_tween: Tween
+var _is_typing: bool = false
+var _last_visible_chars: int = 0
 
 func _ready():
 	# Simple entrance animation
@@ -26,6 +29,38 @@ func setup(name_text: String, role_text: String, content: String):
 	name_lbl.text = name_text
 	role_lbl.text = role_text
 	content_lbl.text = content
+	
+	# Start Typing Animation
+	content_lbl.visible_ratio = 0.0
+	_is_typing = true
+	
+	if _typing_tween: _typing_tween.kill()
+	_typing_tween = create_tween()
+	
+	var duration = content.length() / GameManager.dialogue_typing_speed
+	_typing_tween.tween_property(content_lbl, \"visible_ratio\", 1.0, duration)
+	_typing_tween.finished.connect(func(): _is_typing = false)
+	
+	_last_visible_chars = 0
+
+func _process(_delta):
+	if _is_typing:
+		if content_lbl.visible_characters > _last_visible_chars:
+			_last_visible_chars = content_lbl.visible_characters
+			_play_typing_sound()
+
+func _play_typing_sound():
+	AudioManager.play_sfx(\"res://assets/Audio/SFX/typingsound.wav\", -8.0, randf_range(0.8, 1.2))
+
+func _input(event):
+	if _is_typing and (event.is_action_pressed(\"interact\") or event.is_action_pressed(\"view_info\")):
+		_finish_typing()
+		get_viewport().set_input_as_handled()
+
+func _finish_typing():
+	if _typing_tween: _typing_tween.kill()
+	content_lbl.visible_ratio = 1.0
+	_is_typing = false
 "
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_box"]

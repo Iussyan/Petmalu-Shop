@@ -3,28 +3,18 @@
 [ext_resource type="Script" uid="uid://di2cx4phku2bx" path="res://assets/Scenes/doors.gd" id="1_c0owo"]
 [ext_resource type="Texture2D" uid="uid://4v61vgxck812" path="res://assets/Tile Assets/House_Tileset.png" id="1_q2won"]
 [ext_resource type="PackedScene" uid="uid://caaxvbqm4td3f" path="res://assets/Scenes/component/interactable.tscn" id="3_u4lg4"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_c0owo"]
-atlas = ExtResource("1_q2won")
-region = Rect2(544, 48, 16, 16)
+[ext_resource type="AudioStream" uid="uid://dokkgfy0ebjak" path="res://assets/Audio/SFX/door_open.mp3" id="4_u4lg4"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v3h6k"]
 atlas = ExtResource("1_q2won")
 region = Rect2(544, 16, 16, 16)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_c0owo"]
+atlas = ExtResource("1_q2won")
+region = Rect2(544, 48, 16, 16)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_u4lg4"]
 animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_c0owo")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_v3h6k")
-}],
-"loop": true,
-"name": &"close",
-"speed": 5.0
-}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_v3h6k")
@@ -56,7 +46,7 @@ script = ExtResource("1_c0owo")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=194011416]
 sprite_frames = SubResource("SpriteFrames_u4lg4")
-animation = &"close"
+animation = &"open"
 autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2073833328]
@@ -68,3 +58,29 @@ shape = SubResource("RectangleShape2D_qwktp")
 position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_ed6il")
 debug_color = Color(0.6025809, 0.53401816, 0.27797306, 0.41960785)
+
+[node name="DoorAudio" type="AudioStreamPlayer2D" parent="." unique_id=987654321]
+stream = ExtResource("4_u4lg4")
+
+[node name="InteractionPrompt" type="PanelContainer" parent="." unique_id=123456789]
+z_index = 10
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -9.000001
+offset_top = 13.000001
+offset_right = 25.999996
+offset_bottom = 23.000002
+grow_horizontal = 2
+grow_vertical = 0
+scale = Vector2(0.2, 0.2)
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="InteractionPrompt" unique_id=987654322]
+layout_mode = 2
+size_flags_stretch_ratio = 0.0
+theme_override_font_sizes/font_size = 4
+text = "[E] Enter"
+horizontal_alignment = 1

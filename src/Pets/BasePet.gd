@@ -19,6 +19,13 @@ enum Behavior { WANDER, LOYAL, SKITTISH, LAZY, CURIOUS, PLAYFUL, GRUMPY, MISCHIE
 @export var health_decay_rate: float = 1.0 # When starving (hunger = 0)
 @export var health_regen_rate: float = 0.5 # When well-fed (hunger > 80)
 
+@export_group("Advanced Sounds")
+@export_file("*.wav", "*.mp3", "*.ogg") var sound_walk: String = ""
+@export var sound_pool: Array[String] = []
+@export var proximity_range: float = 120.0
+@export var vocal_min_delay: float = 4.0
+@export var vocal_max_delay: float = 10.0
+
 # --- Stats (0-100) ---
 var hunger: float = 100.0:
 	set(val): hunger = clamp(val, 0, 100)
@@ -42,6 +49,10 @@ var pet_custom_name: String = ""
 @onready var happy_bar: ProgressBar = $StatsUI/VBoxContainer/HappyBar
 @onready var interact_prompt: Label = $InteractPrompt
 @onready var sprite: Sprite2D = $Sprite2D
+@onready var walk_player: AudioStreamPlayer2D = $WalkPlayer
+@onready var vocal_player: AudioStreamPlayer2D = $VocalPlayer
+
+var _vocal_timer: float = 0.0
 
 func _ready():
 	if pet_id != "" and pet_id in GameManager.rescued_wild_pet_ids:
@@ -61,8 +72,11 @@ func _ready():
 		health = mem.health
 		happiness = mem.happiness
 		pet_custom_name = mem.get("name", "")
-		if mem.has("position"):
-			global_position = mem.position
+		if mem.has("position") and mem.position != null:
+			var pos = mem.position
+			if pos is String: pos = str_to_var(pos)
+			if pos != null:
+				global_position = pos
 	
 	_update_ui()
 	_find_player()
@@ -108,7 +122,39 @@ func _physics_process(delta):
 	else:
 		velocity = Vector2.ZERO
 		
+	_update_sound_logic(delta)
 	move_and_slide()
+
+func _update_sound_logic(delta):
+	# Walking sound
+	if velocity.length() > 10.0 and sound_walk != "":
+		if not walk_player.playing:
+			if walk_player.stream == null or walk_player.stream.resource_path != sound_walk:
+				walk_player.stream = load(sound_walk)
+			walk_player.play()
+	else:
+		if walk_player.playing:
+			walk_player.stop()
+
+	# Proximity sounds
+	if not sound_pool.is_empty() and is_instance_valid(target_node):
+		var dist = global_position.distance_to(target_node.global_position)
+		if dist < proximity_range:
+			_vocal_timer -= delta
+			if _vocal_timer <= 0:
+				_play_random_vocal()
+				_vocal_timer = randf_range(vocal_min_delay, vocal_max_delay)
+		else:
+			# Reset timer slightly so it starts countdown when player enters
+			_vocal_timer = min(_vocal_timer, 1.0)
+
+func _play_random_vocal():
+	if sound_pool.is_empty(): return
+	var sound_path = sound_pool[randi() % sound_pool.size()]
+	if sound_path != "":
+		vocal_player.stream = load(sound_path)
+		vocal_player.pitch_scale = randf_range(0.9, 1.1)
+		vocal_player.play()
 
 func _update_ai_decisions(delta):
 	if not is_instance_valid(target_node):

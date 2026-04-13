@@ -3,6 +3,7 @@ extends CharacterBody2D
 @export var speed: float = 250.0
 
 var last_direction: String = "down"
+var is_locked: bool = false
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var sprite: Sprite2D = $Sprite2D
@@ -23,6 +24,8 @@ func _ready() -> void:
 	_ensure_input_action("view_info", KEY_SPACE)
 
 func _input(event: InputEvent) -> void:
+	if is_locked: return
+	
 	# Priority 1: Closing any open Popups/UI
 	if event.is_action_pressed("view_info") or event.is_action_pressed("interact") or event.is_action_pressed("ui_cancel"):
 		if GameManager.active_popup:
@@ -74,6 +77,8 @@ func _ensure_input_action(action: String, key_code: int) -> void:
 	InputMap.action_add_event(action, new_event)
 
 func _physics_process(_delta: float) -> void:
+	if is_locked: return
+	
 	var input_vector = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	
 	if input_vector != Vector2.ZERO:
@@ -95,5 +100,12 @@ func _update_direction(input_vector: Vector2) -> void:
 func set_facing_direction(dir: String):
 	if dir in ["up", "down", "left", "right"]:
 		last_direction = dir
+		if has_node("AnimationPlayer"):
+			$AnimationPlayer.play("idle_" + last_direction)
+
+func lock_input(lock: bool):
+	is_locked = lock
+	if is_locked:
+		velocity = Vector2.ZERO
 		if has_node("AnimationPlayer"):
 			$AnimationPlayer.play("idle_" + last_direction)

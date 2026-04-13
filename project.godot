@@ -14,8 +14,8 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
-config/name="Malupet Shop"
-run/main_scene="res://src/Worlds/Main.tscn"
+config/name="Petmalu Shop"
+run/main_scene="res://src/UI/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 
@@ -25,6 +25,8 @@ GameManager="*res://src/Autoloads/GameManager.gd"
 FadeOverlay="*res://src/UI/FadeOverlay.tscn"
 MainHUD="*res://src/UI/MainHUD.tscn"
 ItemDB="*res://src/Autoloads/ItemDB.gd"
+SaveManager="*res://src/Autoloads/SaveManager.gd"
+AudioManager="*res://src/Autoloads/AudioManager.gd"
 
 [display]
 

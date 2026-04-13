@@ -3,7 +3,7 @@
 Building this game is all about creating a cozy cycle of love and care. Here is how we make the magic happen:
 
 1. The Grand Tour (Exploration)
-The player starts their journey in the Town, but as they grow their shop's reputation, they unlock new, beautiful places like the Forest, Beach, and Mountains. Each area has its own unique "vibe" and specific animals waiting to be found.
+The player starts their journey in the Town, but as they grow their shop's reputation, they unlock new, beautiful places like the Desert, Forest, and Beach. Each area has its own unique "vibe" and specific animals waiting to be found.
 
 2. A New Friend (Rescue)
 While wandering, the player will encounter animals that need help. Whether they are lost or injured, the player "collects" them from the wild. The game is smart—it remembers exactly which animal was found and what condition it was in when it was rescued.

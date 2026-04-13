@@ -1,0 +1,54 @@
+[gd_scene format=4 uid="uid://desert_world_001"]
+
+[ext_resource type="PackedScene" uid="uid://c8j1k2m3n4p5" path="res://src/Player/Player.tscn" id="1_player"]
+[ext_resource type="TileSet" uid="uid://c00edabqs53ca" path="res://Tilesets/game_tile_sets.tres" id="2_tileset"]
+[ext_resource type="PackedScene" uid="uid://dh42umcm72bia" path="res://assets/Scenes/doors.tscn" id="3_door"]
+
+[sub_resource type="GDScript" id="GDScript_desert"]
+script/source = "extends Node2D
+
+func _ready():
+	# Modular Teleport Placement
+	if GameManager.target_entrance_id != -1:
+		_position_player_at_entrance(GameManager.target_entrance_id)
+		GameManager.target_entrance_id = -1
+
+	# BGM Setup (replace with desert_theme.mp3 when ready)
+	if has_node(\"/root/AudioManager\"):
+		AudioManager.play_bgm(\"res://assets/Audio/BGM/town_theme.mp3\")
+
+	if has_node(\"/root/FadeOverlay\"):
+		get_node(\"/root/FadeOverlay\").fade_in()
+
+func _position_player_at_entrance(id):
+	for node in get_tree().get_nodes_in_group(\"entrances\"):
+		if \"my_id\" in node and node.my_id == id:
+			$Player.global_position = node.global_position + node.spawn_offset
+			$Player.set_facing_direction(GameManager.player_facing_on_spawn)
+			return
+"
+
+[node name="Desert" type="Node2D"]
+script = SubResource("GDScript_desert")
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector2(0, 0)
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Ground" type="TileMapLayer" parent="World"]
+tile_set = ExtResource("2_tileset")
+texture_filter = 0
+
+[node name="PlaceholderLabel" type="Label" parent="World"]
+offset_left = -200.0
+offset_top = -30.0
+offset_right = 200.0
+offset_bottom = 30.0
+theme_override_font_sizes/font_size = 24
+text = "🏜️ DESERT AREA
+(Work in Progress)"
+horizontal_alignment = 1
+
+[node name="ExitDoor" parent="World" instance=ExtResource("3_door")]
+position = Vector2(0, 64)

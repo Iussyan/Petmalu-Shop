@@ -15,7 +15,7 @@ Your Lola left you more than just a shop; she left you a mission. Restore the **
 The cycle of Petmalu Shop is designed to be a rewarding, cozy journey:
 
 ### 1. **Explore** 🗺️
-Traverse through diverse biomes. Start in the cozy **Town**, then unlock the lush **Forest**, the sunny **Beach**, and the challenging **Mountain** areas.
+Traverse through diverse biomes. Start in the cozy **Town**, then unlock the scorching **Desert**, the lush **Forest**, and the sunny **Beach** areas.
 
 ### 2. **Rescue** 🐕
 Perform field rescues or assist injured animals across the landscapes. Each rescue is unique, and the game remembers every friend you find.

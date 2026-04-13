@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "skills": {
+    "godot-adapt-desktop-to-mobile": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "computedHash": "f97e08cae8ef1e8e25c0a33dfb6392c7c6a2d659f8c1936188f8c16ea4fedbb8"
+    },
+    "godot-development": {
+      "source": "zate/cc-godot",
+      "sourceType": "github",
+      "computedHash": "36ff87f70db9fe7e4b83be711696dcc027febc310d4938a4b71bb592d2bf3b51"
+    },
+    "godot-gdscript-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "700c3e7696790ece30d0f7f48245386493a8857da592d191356211c2b843fdbf"
+    },
+    "godot-mcp-setup": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "computedHash": "2cf04c91101227c4da8aeac9079eb779322e01d79eb421766fd4176e590459d7"
+    },
+    "godot-save-load-systems": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "computedHash": "b8993ad2ff5d92d63c4c3463cc12fb0c6f6a8a45b86ca24e42735b9bc5566e12"
+    }
+  }
+}
