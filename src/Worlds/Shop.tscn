@@ -272,3 +272,4 @@ behavior = 2
 
 [node name="Player" parent="." unique_id=243418967 instance=ExtResource("1_player")]
 position = Vector2(-48.5437, 32.12622)
+speed = 85.0
