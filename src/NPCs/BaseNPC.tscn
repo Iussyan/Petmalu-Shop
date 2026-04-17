@@ -200,7 +200,7 @@ offset_left = -50.0
 offset_top = -20.0
 offset_right = 50.0
 offset_bottom = -4.0
-theme_override_colors/font_color = Color(1, 1, 0.490196, 1)
+theme_override_colors/font_color = Color(0.91764706, 0.8666667, 0.7921569, 1)
 theme_override_font_sizes/font_size = 8
 text = "Role"
 horizontal_alignment = 1
@@ -230,9 +230,7 @@ horizontal_alignment = 1
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=491420081]
 unique_name_in_owner = true
-libraries = {
-"": SubResource("AnimationLibrary_eh6dh")
-}
+libraries/ = SubResource("AnimationLibrary_eh6dh")
 playback_auto_capture_ease_type = 2
 
 [connection signal="body_entered" from="InteractArea" to="." method="_on_interaction_area_body_entered"]

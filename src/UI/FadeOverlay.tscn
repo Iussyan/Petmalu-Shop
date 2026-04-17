@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c7t8sae0w1v2"]
 
-[ext_resource type="Script" path="res://src/UI/FadeOverlay.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://pw464l6a2apm" path="res://src/UI/FadeOverlay.gd" id="1_script"]
 
 [sub_resource type="Animation" id="Animation_fade_in"]
 resource_name = "fade_in"
@@ -36,16 +36,16 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_fade"]
 _data = {
-"fade_in": SubResource("Animation_fade_in"),
-"fade_out": SubResource("Animation_fade_out")
+&"fade_in": SubResource("Animation_fade_in"),
+&"fade_out": SubResource("Animation_fade_out")
 }
 
-[node name="FadeOverlay" type="CanvasLayer"]
+[node name="FadeOverlay" type="CanvasLayer" unique_id=897419763]
 process_mode = 3
 layer = 120
 script = ExtResource("1_script")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1576695677]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -54,7 +54,5 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-"": SubResource("AnimationLibrary_fade")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1826956637]
+libraries/ = SubResource("AnimationLibrary_fade")

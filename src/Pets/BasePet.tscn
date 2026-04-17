@@ -192,7 +192,9 @@ _data = {
 [node name="BasePet" type="CharacterBody2D" unique_id=2065790875]
 collision_layer = 4
 script = ExtResource("1_script")
+wild_behavior = 1
 shop_behavior = 4
+move_speed = 50.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=718911276]
 unique_name_in_owner = true
@@ -231,7 +233,7 @@ offset_left = -40.0
 offset_top = 22.0
 offset_right = 40.0
 offset_bottom = 45.0
-theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_colors/font_color = Color(0.91764706, 0.8666667, 0.7921569, 1)
 theme_override_font_sizes/font_size = 8
 text = "[E] Interact"
 horizontal_alignment = 1

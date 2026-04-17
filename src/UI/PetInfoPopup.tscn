@@ -1,20 +1,5 @@
 [gd_scene format=3 uid="uid://c6xk7b8wan3m"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_glass"]
-bg_color = Color(0.1, 0.1, 0.12, 0.94)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.08)
-corner_radius_top_left = 15
-corner_radius_top_right = 15
-corner_radius_bottom_right = 15
-corner_radius_bottom_left = 15
-shadow_color = Color(0, 0, 0, 0.2)
-shadow_size = 15
-shadow_offset = Vector2(0, 8)
-
 [sub_resource type="GDScript" id="GDScript_popup"]
 script/source = "extends CanvasLayer
 
@@ -104,12 +89,26 @@ func _on_name_submitted(new_text):
 		name_edit.release_focus()
 "
 
-[node name="PetInfoPopup" type="CanvasLayer"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_glass"]
+bg_color = Color(0.1, 0.1, 0.12, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.08)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+shadow_color = Color(0, 0, 0, 0.2)
+shadow_size = 15
+shadow_offset = Vector2(0, 8)
+
+[node name="PetInfoPopup" type="CanvasLayer" unique_id=1232972410]
 layer = 102
-visible = false
 script = SubResource("GDScript_popup")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Panel" type="Panel" parent="." unique_id=1430378142]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -123,7 +122,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_glass")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel" unique_id=418496482]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -136,79 +135,79 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 15
 
-[node name="NameEdit" type="LineEdit" parent="Panel/VBoxContainer"]
+[node name="NameEdit" type="LineEdit" parent="Panel/VBoxContainer" unique_id=61569265]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 placeholder_text = "Enter name..."
 alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="Panel/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="Panel/VBoxContainer" unique_id=593301222]
 layout_mode = 2
 
-[node name="StatsGrid" type="VBoxContainer" parent="Panel/VBoxContainer"]
+[node name="StatsGrid" type="VBoxContainer" parent="Panel/VBoxContainer" unique_id=429038904]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="MoodRow" type="HBoxContainer" parent="Panel/VBoxContainer/StatsGrid"]
+[node name="MoodRow" type="HBoxContainer" parent="Panel/VBoxContainer/StatsGrid" unique_id=796160979]
 layout_mode = 2
 
-[node name="Icon" type="Label" parent="Panel/VBoxContainer/StatsGrid/MoodRow"]
+[node name="Icon" type="Label" parent="Panel/VBoxContainer/StatsGrid/MoodRow" unique_id=368305434]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "✨ Current Mood"
 
-[node name="Value" type="Label" parent="Panel/VBoxContainer/StatsGrid/MoodRow"]
+[node name="Value" type="Label" parent="Panel/VBoxContainer/StatsGrid/MoodRow" unique_id=77858605]
 layout_mode = 2
 text = "😊 Content"
 
-[node name="HSeparator" type="HSeparator" parent="Panel/VBoxContainer/StatsGrid"]
+[node name="HSeparator" type="HSeparator" parent="Panel/VBoxContainer/StatsGrid" unique_id=816986385]
 modulate = Color(1, 1, 1, 0.196078)
 layout_mode = 2
 
-[node name="HungerRow" type="HBoxContainer" parent="Panel/VBoxContainer/StatsGrid"]
+[node name="HungerRow" type="HBoxContainer" parent="Panel/VBoxContainer/StatsGrid" unique_id=169293075]
 layout_mode = 2
 
-[node name="Icon" type="Label" parent="Panel/VBoxContainer/StatsGrid/HungerRow"]
+[node name="Icon" type="Label" parent="Panel/VBoxContainer/StatsGrid/HungerRow" unique_id=1131261917]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "🍖 Hunger"
 
-[node name="Value" type="Label" parent="Panel/VBoxContainer/StatsGrid/HungerRow"]
+[node name="Value" type="Label" parent="Panel/VBoxContainer/StatsGrid/HungerRow" unique_id=1495120791]
 layout_mode = 2
 text = "100 / 100"
 
-[node name="HealthRow" type="HBoxContainer" parent="Panel/VBoxContainer/StatsGrid"]
+[node name="HealthRow" type="HBoxContainer" parent="Panel/VBoxContainer/StatsGrid" unique_id=297340308]
 layout_mode = 2
 
-[node name="Icon" type="Label" parent="Panel/VBoxContainer/StatsGrid/HealthRow"]
+[node name="Icon" type="Label" parent="Panel/VBoxContainer/StatsGrid/HealthRow" unique_id=130422709]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "❤️ Health"
 
-[node name="Value" type="Label" parent="Panel/VBoxContainer/StatsGrid/HealthRow"]
+[node name="Value" type="Label" parent="Panel/VBoxContainer/StatsGrid/HealthRow" unique_id=761365184]
 layout_mode = 2
 text = "100 / 100"
 
-[node name="HappyRow" type="HBoxContainer" parent="Panel/VBoxContainer/StatsGrid"]
+[node name="HappyRow" type="HBoxContainer" parent="Panel/VBoxContainer/StatsGrid" unique_id=1829811820]
 layout_mode = 2
 
-[node name="Icon" type="Label" parent="Panel/VBoxContainer/StatsGrid/HappyRow"]
+[node name="Icon" type="Label" parent="Panel/VBoxContainer/StatsGrid/HappyRow" unique_id=505834818]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "😊 Happiness"
 
-[node name="Value" type="Label" parent="Panel/VBoxContainer/StatsGrid/HappyRow"]
+[node name="Value" type="Label" parent="Panel/VBoxContainer/StatsGrid/HappyRow" unique_id=608353800]
 layout_mode = 2
 text = "100 / 100"
 
-[node name="BehaviorLabel" type="Label" parent="Panel/VBoxContainer"]
+[node name="BehaviorLabel" type="Label" parent="Panel/VBoxContainer" unique_id=88121442]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
+theme_override_colors/font_color = Color(0.91764706, 0.8666667, 0.7921569, 1)
 theme_override_font_sizes/font_size = 14
 text = "SHOP TRAIT: WANDER"
 horizontal_alignment = 1
 
-[node name="Prompt" type="Label" parent="Panel/VBoxContainer"]
+[node name="Prompt" type="Label" parent="Panel/VBoxContainer" unique_id=638416829]
 layout_mode = 2
 size_flags_vertical = 10
 theme_override_font_sizes/font_size = 12

@@ -1,11 +1,41 @@
-[gd_scene format=3 uid="uid://m41nm3nu"]
+[gd_scene format=3 uid="uid://cnims87bfghxp"]
 
-[ext_resource type="Script" uid="uid://menu_script" path="res://src/UI/MainMenu.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://sn6dbgb2vyd5" path="res://src/UI/MainMenu.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://o0mjwkrs7a8c" path="res://assets/BG/814c822f256c81b7ccf35467308c4ee3.jpg" id="2_fapdh"]
+[ext_resource type="FontFile" uid="uid://d1ud3gh3vwwdh" path="res://assets/Font/Shifa Rame.ttf" id="3_w38c1"]
+[ext_resource type="FontFile" uid="uid://cglowdoxwp5me" path="res://assets/Font/GrapeSoda.ttf" id="4_1xg02"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
-bg_color = Color(0.05, 0.05, 0.05, 1)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_condu"]
+texture = ExtResource("2_fapdh")
 
-[node name="MainMenu" type="Control"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ms2jq"]
+bg_color = Color(0.8039216, 0.7058824, 0.85882354, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m6bq7"]
+bg_color = Color(0.8039216, 0.7058824, 0.85882354, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_020l3"]
+bg_color = Color(0.8039216, 0.7058824, 0.85882354, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[node name="MainMenu" type="Control" unique_id=361398066]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,16 +44,16 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="Background" type="Panel" parent="."]
+[node name="Background" type="Panel" parent="." unique_id=231157009]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+theme_override_styles/panel = SubResource("StyleBoxTexture_condu")
 
-[node name="DecorImg" type="TextureRect" parent="."]
+[node name="DecorImg" type="TextureRect" parent="." unique_id=1669857582]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -39,7 +69,7 @@ grow_vertical = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=296834798]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -47,18 +77,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="CenterContainer"]
+[node name="VBox" type="VBoxContainer" parent="CenterContainer" unique_id=2049642148]
 layout_mode = 2
 theme_override_constants/separation = 40
 
-[node name="Title" type="Label" parent="CenterContainer/VBox"]
+[node name="Title" type="Label" parent="CenterContainer/VBox" unique_id=482047380]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.84, 0, 1)
-theme_override_font_sizes/font_size = 64
-text = "PETMALU SHOP"
+theme_override_colors/font_color = Color(0.91764706, 0.8666667, 0.7921569, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.42352942)
+theme_override_constants/shadow_offset_x = 8
+theme_override_fonts/font = ExtResource("3_w38c1")
+theme_override_font_sizes/font_size = 90
+text = "Pawfect Haven"
 horizontal_alignment = 1
 
-[node name="Buttons" type="VBoxContainer" parent="CenterContainer/VBox"]
+[node name="Buttons" type="VBoxContainer" parent="CenterContainer/VBox" unique_id=1664722901]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -68,27 +101,34 @@ theme_override_constants/separation = 15
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-pivot_offset = Vector2(125, 25)
-theme_override_font_sizes/font_size = 24
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.2901961, 0.2901961, 0.2901961, 1)
+theme_override_fonts/font = ExtResource("4_1xg02")
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_ms2jq")
 text = "CONTINUE"
 
 [node name="NewGameButton" type="Button" parent="CenterContainer/VBox/Buttons" unique_id=123456789]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-pivot_offset = Vector2(125, 25)
-theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.2901961, 0.2901961, 0.2901961, 1)
+theme_override_fonts/font = ExtResource("4_1xg02")
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_m6bq7")
 text = "NEW GAME"
 
 [node name="QuitButton" type="Button" parent="CenterContainer/VBox/Buttons" unique_id=11223344]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-pivot_offset = Vector2(125, 25)
-theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.2901961, 0.2901961, 0.2901961, 1)
+theme_override_fonts/font = ExtResource("4_1xg02")
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_020l3")
 text = "QUIT"
 
-[node name="Version" type="Label" parent="."]
+[node name="Version" type="Label" parent="." unique_id=1306240485]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0

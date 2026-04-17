@@ -84,7 +84,7 @@ text = "💰"
 
 [node name="Label" type="Label" parent="Stats/CoinBox/HBox" unique_id=728129038]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
+theme_override_colors/font_color = Color(0.91764706, 0.8666667, 0.7921569, 1)
 theme_override_font_sizes/font_size = 18
 text = "100"
 
